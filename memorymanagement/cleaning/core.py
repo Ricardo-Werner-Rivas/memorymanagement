@@ -45,6 +45,7 @@ class Cleaner:
             Returns the list of variables to be erased from memory.
         None of this properties has setter or deleter. Those lists can only be manipulated through the class methods.
     """
+    
     def __init__(self,not_delete:list[str]|None=None,excluded:list[str]=[],flagged:list[str]=[]):
         """
         Initializes the class instance.\n
@@ -68,6 +69,7 @@ class Cleaner:
         self._excluded=excluded.copy()
         self._flagged=flagged.copy()
         self._name=None
+    
     def update(self,exclude:str|list[str]|tuple[str]|None=None,include:str|list[str]|tuple[str]|None=None):
         """
         Flags all the new global variables' references that were not manually excluded here or before.
@@ -92,6 +94,7 @@ class Cleaner:
                 while var in self._excluded:
                     self._excluded.remove(var)
         self._flagged=[var for var in list(vars(modules["__main__"]))if var not in self.not_delete and var not in self.excluded]
+    
     @property
     def not_delete(self):
         if not self._name or vars(modules["__main__"])[self._name] is not self:
@@ -107,12 +110,15 @@ class Cleaner:
         elif self._name not in self._not_delete:
             self._not_delete.append(self._name)
         return self._not_delete
+    
     @property
     def excluded(self):
         return self._excluded
+    
     @property
     def flagged(self):
         return self._flagged
+    
     def exclude(self,*exclude:str):
         """
         Allows to exclude the desired references from the cleaning process.
@@ -127,6 +133,7 @@ class Cleaner:
                 self._flagged.remove(var)
             if var not in self._excluded:
                 self._excluded.append(var)
+    
     def include(self,*include:str):
         """
         Allows to include the desired references (previously excluded) in the cleaning process.
@@ -141,6 +148,7 @@ class Cleaner:
                 self._flagged.append(var)
             while var in self._excluded:
                 self._excluded.remove(var)
+    
     def clean(self):
         """
         Culminates the cleaning process.
@@ -150,6 +158,14 @@ class Cleaner:
             if var in list(vars(modules["__main__"])):
                 del vars(modules["__main__"])[var]
         self._flagged.clear()
+    
+    def purge(self):
+        """
+        Clears both `flagged` and `excluded` lists from the `Cleaner` object.
+        """
+        self._flagged.clear()
+        self._excluded.clear()
+    
     def __str__(self):
         string=f"""
         Flagged: {self.flagged}
@@ -159,5 +175,6 @@ class Cleaner:
         Not delete: {self.not_delete}
         """
         return string
+    
     def __repr__(self):
         return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
