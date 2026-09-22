@@ -94,7 +94,7 @@ class Pointer(Generic[PT]):
         Arguments
         ---------
         value : `Any`, Optional
-            Object to point to. If want to point to a class instance atribute, pass to this argument the class instance without the atribute.
+            Object to point to. If want to point to a class instance's atribute, pass to this argument the class instance without the atribute.
         reference : `str`|`None`, Optional
             Name linked to the value to point to. Useful in case there are multiple references pointing to the same value.
         attr : `str`|`None`, Optional
@@ -128,12 +128,12 @@ class Pointer(Generic[PT]):
     # Point to
     def point_to(self,reference:str|None=None,value=None,*,attr:str|None=None):
         """
-        Changes the address which the pointer points to.
+        Changes the address which the `Pointer` object points to.
         
         Arguments
         ---------
         reference : `str`|`None`, Optional
-            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class object.
+            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         value : `Any`|`None`, Optional
             Value to point to. If wanted class attribute, introduce just the class object.
         attr : `str`|`None`, Optional
@@ -174,10 +174,17 @@ class Pointer(Generic[PT]):
                 else:
                     raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
     
+    # Get references
+    def get_refs(self):
+        """
+        Gets all the references pointing to the same current value of the `Pointer` object.
+        """
+        return tuple(key for key,v in self._vars_dict.items() if v is self._value)
+    
     # Switch reference
     def switch_ref(self,reference:str):
         """
-        Allows to switch between references pointing to the same current value of the pointer.
+        Allows to switch between references pointing to the same current value of the `Pointer` object.
         
         Arguments
         ---------
@@ -195,9 +202,7 @@ class Pointer(Generic[PT]):
         """
         Prints all the references pointing to the same current value of the pointer.
         """
-        refs=[key for key,v in self._vars_dict.items() if v is self._value]
-        refs=refs if len(refs)!=0 else [None]
-        print(refs)
+        print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
     
     #* PROPERTIES
     # Value
@@ -235,11 +240,13 @@ class Pointer(Generic[PT]):
         else:
             del self._value
             del self._vars_dict[self.reference]
+    
     # Reference
     @property
     # Getter
     def reference(self):
         return self._name
+    
     # Attribute
     @property
     def attr(self):
@@ -265,36 +272,42 @@ class Pointer(Generic[PT]):
             return self.value+value.value
         else:
             return self.value+value
+    
     # Difference
     def __sub__(self,value):
         if isinstance(value,Pointer):
             return self.value-value.value
         else:
             return self.value-value
+    
     # Multiplication
     def __mul__(self,value):
         if isinstance(value,Pointer):
             return self.value*value.value
         else:
             return self.value*value
+    
     # Fraction
     def __truediv__(self,value):
         if isinstance(value,Pointer):
             return self.value/value.value
         else:
             return self.value/value
+    
     # Integer division
     def __floordiv__(self,value):
         if isinstance(value,Pointer):
             return self.value//value.value
         else:
             return self.value//value
+    
     # Module
     def __mod__(self,value):
         if isinstance(value,Pointer):
             return self.value%value.value
         else:
             return self.value%value
+    
     # Power
     def __pow__(self,value):
         if isinstance(value,Pointer):
@@ -306,21 +319,27 @@ class Pointer(Generic[PT]):
     # Addition
     def __radd__(self,value):
         return value+self.value
+    
     # Difference
     def __rsub__(self,value):
         return value-self.value
+    
     # Multiplication
     def __rmul__(self,value):
         return value*self.value
+    
     # Fraction
     def __rtruediv__(self,value):
         return value/self.value
+    
     # Integer division
     def __rfloordiv__(self,value):
         return value//self.value
+    
     # Module
     def __rmod__(self,value):
         return value%self.value
+    
     # Power
     def __rpow__(self,value):
         return value**self.value
@@ -330,26 +349,32 @@ class Pointer(Generic[PT]):
     def __iadd__(self,value):
         self.value=self.value+value
         return self
+    
     # Difference
     def __isub__(self,value):
         self.value=self.value-value
         return self
+    
     # Multiplication
     def __imul__(self,value):
         self.value=self.value*value
         return self
+    
     # Fraction
     def __itruediv__(self,value):
         self.value=self.value/value
         return self
+    
     # Integer division
     def __ifloordiv__(self,value):
         self.value=self.value//value
         return self
+    
     # Module
     def __imod__(self,value):
         self.value=self.value%value
         return self
+    
     def __ipow__(self,value):
         self.value=self.value**value
         return self
@@ -361,30 +386,35 @@ class Pointer(Generic[PT]):
             return self.value==value.value
         else:
             return self.value==value
+    
     # Inequality
     def __ne__(self,value):
         if isinstance(value,Pointer):
             return self.value!=value.value
         else:
             return self.value!=value
+    
     # Lower than
     def __lt__(self,value):
         if isinstance(value,Pointer):
             return self.value<value.value
         else:
             return self.value<value
+    
     # Lower or equal
     def __le__(self,value):
         if isinstance(value,Pointer):
             return self.value<=value.value
         else:
             return self.value<=value
+    
     # Greater than
     def __gt__(self,value):
         if isinstance(value,Pointer):
             return self.value>value.value
         else:
             return self.value>value
+    
     # Greater or equal
     def __ge__(self,value):
         if isinstance(value,Pointer):
@@ -396,9 +426,11 @@ class Pointer(Generic[PT]):
     # Negative
     def __neg__(self):
         return Pointer(-self.value)
+    
     # Positive
     def __pos__(self):
         return Pointer(+self.value)
+    
     # Absolute value
     def __abs__(self):
         return Pointer(abs(self.value))
@@ -412,9 +444,11 @@ class Pointer(Generic[PT]):
     # __int__
     def __int__(self):
         return int(self.value)
+    
     # __float__
     def __float__(self):
         return float(self.value)
+    
     # __index__
     def __index__(self):
         return self.value
@@ -423,20 +457,22 @@ class Pointer(Generic[PT]):
     # Representation
     def __repr__(self):
         return f"{self.__class__.__name__}({self.value})"
+    
     # HTML representation
     def _repr_html_(self):
-        return f"""
-        <table>
-            <thead>
-                <tr>
-                    <th style=\"text-align: center;\">{self.reference}</th>
-                </tr>
-            </thead>
-            <tr>
-                <td style=\"text-align: center;\">{self.value}</td>
-            </tr>
-        </table>
-        """
+        return f"""\
+<table>
+    <thead>
+        <tr>
+            <th style=\"text-align: center;\">{self.reference}</th>
+        </tr>
+    </thead>
+    <tr>
+        <td style=\"text-align: center;\">{self.value}</td>
+    </tr>
+</table>\
+"""
+    
     # Printing
     def __str__(self):
         return str(self.value)
