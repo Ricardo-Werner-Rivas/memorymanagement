@@ -147,28 +147,61 @@ class Cleaner:
                 self._excluded.remove(var)
     
     # Include all excluded variables
-    def include_all(self):
+    def include_all(self,*,exclude:str|list[str]|tuple[str]|None=None):
         """
         Flag all the excluded variables and clear the `excluded` list
+        
+        Arguments
+        ---------
+        exclude : `str`|`list[str]`|`tuple[str]`|`None`, Optional
+            Variables not to be included into the `flagged` list
         """
         self._flagged.extend(self.excluded)
         self._excluded.clear()
+        
+        if exclude:
+            if isinstance(exclude,str):
+                self.exclude(exclude)
+            else:
+                self.exclude(*exclude)
     
     # Exclude all flagged variables
-    def exclude_all(self):
+    def exclude_all(self,*,include:str|list[str]|tuple[str]|None=None):
         """
         Exclude all the flagged variables and clear the `flagged` list
+        
+        Arguments
+        ---------
+        include : `str`|`list[str]`|`tuple[str]`|`None`, Optional
+            Variables not to be excluded from the `flagged` list
         """
         self._excluded.extend(self.flagged)
         self._flagged.clear()
+        
+        if include:
+            if isinstance(include,str):
+                self.include(include)
+            else:
+                self.include(*include)
     
     # Purge flagged and excluded variables
-    def purge(self):
+    def purge(self,*,flagged:bool=True,excluded:bool=True):
         """
         Clears both `flagged` and `excluded` lists from the `Cleaner` object.
+        
+        Arguments
+        ---------
+        flagged : `bool`, Optional
+            Wether the `flagged` list should be purged (`True`) or not (`False`). `True` by default
+        excluded : `bool`, Optional
+            Wether the `excluded` list should be purged (`True`) or not (`False`). `True` by default
         """
-        self._flagged.clear()
-        self._excluded.clear()
+        if not flagged and not excluded:
+            pass
+        if flagged:
+            self._flagged.clear()
+        if excluded:
+            self._excluded.clear()
     
     # Clean
     def clean(self):
