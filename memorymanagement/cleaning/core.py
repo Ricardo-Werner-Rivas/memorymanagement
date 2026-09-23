@@ -154,7 +154,15 @@ class Cleaner:
         self._flagged.extend(self.excluded)
         self._excluded.clear()
     
-    # Purge
+    # Exclude all flagged variables
+    def exclude_all(self):
+        """
+        Exclude all the flagged variables and clear the `flagged` list
+        """
+        self._excluded.extend(self.flagged)
+        self._flagged.clear()
+    
+    # Purge flagged and excluded variables
     def purge(self):
         """
         Clears both `flagged` and `excluded` lists from the `Cleaner` object.
