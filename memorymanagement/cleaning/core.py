@@ -146,6 +146,30 @@ class Cleaner:
             while var in self._excluded:
                 self._excluded.remove(var)
     
+    # Include all excluded variables
+    def include_all(self):
+        """
+        Flag all the excluded variables and clear the `excluded` list
+        """
+        self._flagged.extend(self.excluded)
+        self._excluded.clear()
+    
+    # Exclude all flagged variables
+    def exclude_all(self):
+        """
+        Exclude all the flagged variables and clear the `flagged` list
+        """
+        self._excluded.extend(self.flagged)
+        self._flagged.clear()
+    
+    # Purge flagged and excluded variables
+    def purge(self):
+        """
+        Clears both `flagged` and `excluded` lists from the `Cleaner` object.
+        """
+        self._flagged.clear()
+        self._excluded.clear()
+    
     # Clean
     def clean(self):
         """
@@ -156,14 +180,6 @@ class Cleaner:
             if var in list(vars(modules["__main__"])):
                 del vars(modules["__main__"])[var]
         self._flagged.clear()
-    
-    # Purge
-    def purge(self):
-        """
-        Clears both `flagged` and `excluded` lists from the `Cleaner` object.
-        """
-        self._flagged.clear()
-        self._excluded.clear()
     
     #* PROPERTIES
     # Variables not to be deleted
@@ -205,14 +221,13 @@ class Cleaner:
     #* SCREEN DUNDER METHODS
     # __str__
     def __str__(self):
-        string=f"""
+        return f"""
         Flagged: {self.flagged}
         
         Excluded: {self.excluded}
         
         Not delete: {self.not_delete}
         """
-        return string
     
     # __repr__
     def __repr__(self):
