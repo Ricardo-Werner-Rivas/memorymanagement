@@ -89,6 +89,18 @@ cleaner.exclude(<name_var_1>,<name_var_2>,...)
 ```py
 cleaner.include(<name_var_1>,<name_var_2>,...)
 ```
+To flag all the excluded variables at once, you can use:
+```py
+cleaner.include_all(exclude=[<var_1>,<var_2>,...]) # exclude: optional keyword argument, accepts strings and iterables of strings
+```
+You can also exclude all the flagged variables like so:
+```py
+cleaner.exclude_all(include=[<var_1>,<var_2>,...]) # include: optional keyword argument, accepts strings and iterables of strings
+```
+And reset the cleaner's parameters like so:
+```py
+cleaner.purge()
+```
 ### Class `Pointer`
 Example:
 ```py
