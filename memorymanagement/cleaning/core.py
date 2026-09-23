@@ -228,10 +228,10 @@ class Cleaner:
                 else:
                     self._name=None
             if not self._name:
-                raise ReferenceError("'Cleaner' object is not referenced")
+                raise ReferenceError("\"Cleaner\" object is not referenced")
         elif self._name not in self._not_delete:
             self._not_delete.append(self._name)
-        return self._not_delete
+        return self._not_delete.copy()
     #^ No setter
     #^ No deleter
     
@@ -239,7 +239,7 @@ class Cleaner:
     @property
     # Getter
     def excluded(self):
-        return self._excluded
+        return self._excluded.copy()
     #^ No setter
     #^ No deleter
     
@@ -247,7 +247,7 @@ class Cleaner:
     @property
     # Getter
     def flagged(self):
-        return self._flagged
+        return self._flagged.copy()
     #^ No setter
     #^ No deleter
     
