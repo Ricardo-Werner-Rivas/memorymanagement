@@ -71,7 +71,7 @@ class Cleaner:
         
         Arguments
         ---------
-        not_delete : `list[str]`, Optional
+        not_delete : `list[str]`|`None`, Optional
             List of variables to never be deleted. It takes the list of global variables of the main module by default.
         excluded : `list[str]`, Optional
             List of variables to be excluded from the memory cleaning process. Empty list by default.
