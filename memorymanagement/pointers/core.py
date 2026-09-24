@@ -138,7 +138,7 @@ class Pointer(Generic[PT]):
             # Store every reference pointing to the given value
             name=[key for key,v in vars_dict.items() if v is value]
             # Set to "None" if no reference was found
-            name=name if len(name)!=0 else [None] #! Should be `None` for it to be caught
+            name=name[0] if len(name)!=0 else None
         # Store the reference in the hidden attribute "_name"
         self._name=name
         # If there is no reference
@@ -162,8 +162,20 @@ class Pointer(Generic[PT]):
         """
         # If no reference or value is given
         if not reference and not value:
-            # Pass #? Should it be made possible to switch instance attribute without receiving value or reference
-            pass
+            # If an instance's attribute name is given
+            if attr:
+                # If the attribute belongs to the pointer's value
+                if attr in dir(self._value):
+                    # Store the attribute name into its corresponding hidden attribute
+                    self._attr=attr
+                # Else
+                else:
+                    # Raise an "AttributeError"
+                    raise AttributeError(f"\"{attr}\" isn't an attribute of the variable \"{self._name}\" with value \"{self._value}\" (\"{self._value.__class__.__name__}\")")
+            # Else
+            else:
+                # Raise a "ValueError"
+                raise ValueError("No argument was given")
         # Else, if both reference and value are given
         elif reference and value:
             # If the reference is in the variables' frame and it points to the given value
@@ -213,7 +225,7 @@ class Pointer(Generic[PT]):
             # Store the given value and its references into their corresponding hidden attributes
             self._name,self._value=[key for key,v in self._vars_dict.items() if v is value],value
             # Modify the "_name" hidden attribute to be a string or "None"
-            self._name=self._name if len(self._name)!=0 else [None] #! Same problem
+            self._name=self._name[0] if len(self._name)!=0 else None
             # If no reference was found
             if self._name==None:
                 # Raise a "NameError"
