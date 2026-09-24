@@ -35,10 +35,14 @@ def pointerize(func):
     func : `FunctionType`
         Decorated function.
     """
+    #* IDENTITY MANAGEMENT
     # Makes the decorating function to keep its identity
     @wraps(func)
+    
+    #* WRAPPER
     # Define the wrapper
     def wrapper(*args,**kwargs):
+        #* SIGNATURE
         # Obtain the signature (parameters and defaults) of the decorated function
         sig=signature(func)
         # Bind call arguments to the signature
@@ -46,6 +50,7 @@ def pointerize(func):
         # Defaults all the arguments which haven't been passed
         bound.apply_defaults()
         
+        #* ARGUMENTS' MAPPING
         # Dictionary containing all the parameters
         param_map=bound.arguments
         
@@ -55,6 +60,7 @@ def pointerize(func):
             if isinstance(val,Pointer)
         }
         
+        #* EXECUTION ARGUMENTS
         # List containing all the positional arguments to be passed to the decorated function
         exec_args=[
             val.value if isinstance(val,Pointer) else val
@@ -66,7 +72,8 @@ def pointerize(func):
             for k,v in bound.kwargs.items()
         }
         
-        # Empty dict, future source to update pointers' values
+        #* TRACKING
+        # Empty dictionary, future source to update pointers' values
         frame_data={}
         
         # Tracer function compatible with the sys.settrace API
@@ -74,10 +81,12 @@ def pointerize(func):
             if event=="return" and frame.f_code is func.__code__:
                 frame_data.update(frame.f_locals)
             return tracer
+        
         # Activate tracing
         settrace(tracer)
-        # We try to execute the function
+        # Try to execute the function
         try:
+            # Storing its result
             result=func(*exec_args,**exec_kwargs)
         # Even if the program meets an error
         finally:
@@ -85,13 +94,16 @@ def pointerize(func):
             settrace(None)
         # If no exception or error is raised, the program continues from here
         
+        #* POINTERS' UPDATING
         # Iterates through the pointers
         for name,ptr in pointer_map.items():
-            # Checks if the parameter name is in the traced frame (of local variables of the decorated function)
+            # Check if the parameter name is in the traced frame (of local variables of the decorated function)
             if name in frame_data:
                 # In which case, the pointer's value is updated
                 ptr.value=frame_data[name]
+        #* RETURNS
         # Return the result of the decorated function
         return result
+    #* RETURNS
     # Return the wrapper
     return wrapper
