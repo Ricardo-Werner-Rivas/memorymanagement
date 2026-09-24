@@ -19,7 +19,6 @@ from sys import modules
 #* MAIN CLASS
 # Class "Cleaner"
 class Cleaner:
-    #& Code comments
     """
     Class for references management. It keeps track of the names of the global variables to be deleted and deletes them when ordered.
     
@@ -314,6 +313,7 @@ class Cleaner:
     #* SCREEN DUNDER METHODS
     # __str__
     def __str__(self):
+        # Return a string with the instance's components
         return f"""
         Flagged: {self.flagged}
         
@@ -324,4 +324,5 @@ class Cleaner:
     
     # __repr__
     def __repr__(self):
+        # Return a string able to rebuild the instance if needed
         return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
