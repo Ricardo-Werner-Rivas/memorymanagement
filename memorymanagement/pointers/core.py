@@ -25,7 +25,6 @@ PT=TypeVar("PT")
 #* MAIN CLASS
 # Define the class "Pointer" with generic type
 class Pointer(Generic[PT]):
-    #& Missing code comments
     """
     Implements pointers in Python for both mutable (though unneded) and non-mutable objects.
     These pointers are completely safe and do not work internally as C's pointers, they are just an imitation of their behaviour.
@@ -102,31 +101,53 @@ class Pointer(Generic[PT]):
         local : `bool`, Optional
             Indicates if the value to point to is a local variable (`True` for yes and `False` for no). `False` by default.
         """
+        # If pointing to local variable
         if local:
+            # Take the local frame
             vars_dict=currentframe().f_back.f_locals
+        # Else
         else:
+            # Take the global frame
             vars_dict=vars(modules["__main__"])
-        self._value=value
-        self._vars_dict=vars_dict
-        self._attr=attr
+        
+        # Store hidden attributes
+        self._value=value # Pointer's value
+        self._vars_dict=vars_dict # Variables' frame
+        self._attr=attr # Instance attribute to point to
+        
+        # If there is an instance's attribute to point to and it doesn't belong to the given value
         if self._attr and self._attr not in dir(self._value):
+            # Raise an "AttributeError"
             raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+        # If a reference is given
         if reference:
+            # If the reference is in the variables' frame and points to the given value
             if reference in vars_dict and vars_dict[reference] is value:
+                # Store the reference in "name" local variable
                 name=reference
+            # Else, if the reference isn't in the variables' frame
             elif reference not in vars_dict:
+                # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
+            # Else, if the reference doesn't point to the given value
             elif vars_dict[reference] is not value:
+                # Raise a "ValueError"
                 raise ValueError(f"Name \"{reference}\" doesn't point to given value ({value})")
+        # Else
         else:
+            # Store every reference pointing to the given value
             name=[key for key,v in vars_dict.items() if v is value]
-            name=name if len(name)!=0 else [None]
+            # Set to "None" if no reference was found
+            name=name[0] if len(name)!=0 else None
+        # Store the reference in the hidden attribute "_name"
         self._name=name
+        # If there is no reference
         if self._name==None:
+            # Raise a "NameError"
             raise NameError(f"No reference is pointing to given value \"{self._value}\"")
     
     # Point to
-    def point_to(self,reference:str|None=None,value=None,*,attr:str|None=None):
+    def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
         Changes the address which the `Pointer` object points to.
         
@@ -139,47 +160,102 @@ class Pointer(Generic[PT]):
         attr : `str`|`None`, Optional
             Attribute of the class if class object was passed through `reference` or `value`.
         """
+        # If no reference or value is given
         if not reference and not value:
-            pass
-        elif reference and value:
-            if reference in self._vars_dict and self._vars_dict[reference] is value:
-                self._name,self._value=reference,value
-                if attr:
-                    if attr in dir(self._value):
-                        self._attr=attr
-                    else:
-                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
-            elif reference not in self._vars_dict:
-                raise NameError(f"Name \"{reference}\" is not defined")
-            elif self._vars_dict[reference] is not value:
-                raise ValueError(f"Name \"{reference}\" doesn't point to given value \"{value}\"")
-        elif reference:
-            if reference in self._vars_dict:
-                self._name,self._value=reference,self._vars_dict[reference]
-                if attr:
-                    if attr in dir(self._value):
-                        self._attr=attr
-                    else:
-                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
-            else:
-                raise NameError(f"Name \"{reference}\" is not defined")
-        elif value:
-            self._name,self._value=[key for key,v in self._vars_dict.items() if v is value],value
-            self._name=self._name if len(self._name)!=0 else [None]
-            if self._name==None:
-                raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+            # If an instance's attribute name is given
             if attr:
+                # If the attribute belongs to the pointer's value
                 if attr in dir(self._value):
+                    # Store the attribute name into its corresponding hidden attribute
                     self._attr=attr
+                # Else
                 else:
+                    # Raise an "AttributeError"
+                    raise AttributeError(f"\"{attr}\" isn't an attribute of the variable \"{self._name}\" with value \"{self._value}\" (\"{self._value.__class__.__name__}\")")
+            # Else
+            else:
+                # Raise a "ValueError"
+                raise ValueError("No argument was given")
+        # Else, if both reference and value are given
+        elif reference and value:
+            # If the reference is in the variables' frame and it points to the given value
+            if reference in self._vars_dict and self._vars_dict[reference] is value:
+                # Store both into their corresponding hidden attributes
+                self._name,self._value=reference,value
+                # If an attribute name is given
+                if attr:
+                    # If the attribute belongs to the given value
+                    if attr in dir(self._value):
+                        # Store attribute name into its corresponding hidden attribute
+                        self._attr=attr
+                    # Else
+                    else:
+                        # Raise an "AttributeError"
+                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+            # Else, if the reference isn't in the variables' frame
+            elif reference not in self._vars_dict:
+                # Raise a "NameError"
+                raise NameError(f"Name \"{reference}\" is not defined")
+            # Else, if the reference doesn't point to the given value
+            elif self._vars_dict[reference] is not value:
+                # Raise a "ValueError"
+                raise ValueError(f"Name \"{reference}\" doesn't point to given value \"{value}\"")
+        # Else, if only a reference is given
+        elif reference:
+            # If the reference is in the variables' frame
+            if reference in self._vars_dict:
+                # Store the reference and the value it is pointing to into their corresponding hidden attributes
+                self._name,self._value=reference,self._vars_dict[reference]
+                # If an instance's attribute name is given
+                if attr:
+                    # If the attribute belongs to the new value
+                    if attr in dir(self._value):
+                        # Store the attribute name into its corresponding hidden attribute
+                        self._attr=attr
+                    # Else
+                    else:
+                        # Raise an "AttributeError"
+                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+            # Else
+            else:
+                # Raise a "NameError"
+                raise NameError(f"Name \"{reference}\" is not defined")
+        # Else, if only a value is given
+        elif value:
+            # Store the given value and its references into their corresponding hidden attributes
+            self._name,self._value=[key for key,v in self._vars_dict.items() if v is value],value
+            # Modify the "_name" hidden attribute to be a string or "None"
+            self._name=self._name[0] if len(self._name)!=0 else None
+            # If no reference was found
+            if self._name==None:
+                # Raise a "NameError"
+                raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+            # If an instance's attribute name is given
+            if attr:
+                # If the attribute belongs to the new value
+                if attr in dir(self._value):
+                    # Store the attribute name into its corresponding hidden attribute
+                    self._attr=attr
+                # Else
+                else:
+                    # Raise an "AttributeError"
                     raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
     
     # Get references
-    def get_refs(self):
+    def get_refs(self)->tuple[str]:
         """
         Gets all the references pointing to the same current value of the `Pointer` object.
         """
+        # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
+    
+    # Print references
+    def print_refs(self):
+        """
+        Prints all the references pointing to the same current value of the pointer.
+        """
+        # Print all the references pointing to the pointer's value
+        print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
     
     # Switch reference
     def switch_ref(self,reference:str):
@@ -191,65 +267,90 @@ class Pointer(Generic[PT]):
         reference : `str`
             Reference to switch the pointer to.
         """
+        # If the given reference is in the variables' frame but it doesn' point to current the pointer's value
         if reference in self._vars_dict and self._vars_dict[reference] is not self.value:
+            # Raise a "ValueError"
             raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value \"{self.value}\"")
+        # Else, if the given reference is not in the variables' frame
         elif reference not in self._vars_dict:
+            # Raise a "NameError"
             raise NameError(f"Name \"{reference}\" is not defined")
+        # Store the reference into its corresponding hidden attribute
         self._name=reference
-    
-    # Print references
-    def print_refs(self):
-        """
-        Prints all the references pointing to the same current value of the pointer.
-        """
-        print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
     
     #* PROPERTIES
     # Value
     @property
     # Getter
     def value(self):
+        # If an instance's attribute name is stored
         if self.attr:
+            # If the stored reference is not in the variables' frame
             if self.reference not in self._vars_dict:
+                # Delete the pointer's value and the stored attribute name
                 del self._value,self.attr
+                # Raise a "NameError"
                 raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
+            # Else, if the stored attribute name doesn't belong to the pointer's value
             elif self.attr not in dir(self._value):
+                # Raise an "AttributeError"
                 raise AttributeError(f"The atribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
+            # Return the instance attribute's value
             return getattr(self._value,self.attr)
+        # Else
         else:
+            # If the stored reference is not in the variables' frame
             if self.reference not in self._vars_dict:
+                # Delete the pointer's hidden attribute "_value"
                 del self._value
+                # Raise a "NameError"
                 raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
+            # If the original value differs from the stored one (because it was changed)
             if self._value is not self._vars_dict[self.reference]:
+                # Update the pointer's value
                 self._value=self._vars_dict[self.reference]
+            # Return the pointer's value
             return self._value
     # Setter
     @value.setter
     def value(self,value):
+        # If an attribute name is stored
         if self.attr:
+            # Set the instance' attribute to the new value
             setattr(self._value,self.attr,value)
+        # Else
         else:
+            # Set the pointers value to the new value
             self._value=value
+            # If the new pointer's value differs from the original variable
             if value is not self._vars_dict[self.reference]:
+                # Update the original variable setting it to the new value
                 self._vars_dict[self.reference]=value
     # Deleter
     @value.deleter
     def value(self):
+        # If an attribute name is stored
         if self.attr:
+            # Delete the attribute from the stored instance
             delattr(self._value,self.attr)
+        # Else
         else:
+            # Delete the "_value" pointer's hidden attribute
             del self._value
+            # Delete the corresponding variable
             del self._vars_dict[self.reference]
     
     # Reference
     @property
     # Getter
     def reference(self):
+        # Return the stored reference
         return self._name
     
     # Attribute
     @property
     def attr(self):
+        # Return the stored attribute name
         return self._attr
     
     #* INDEXATION
@@ -259,11 +360,9 @@ class Pointer(Generic[PT]):
     # Setter
     def __setitem__(self,index,value):
         self.value[index]=value
-        return
     # Deleter
     def __delitem__(self,index):
         del self.value[index]
-        return
     
     #* ARITHMETIC OPERATIONS
     # Addition

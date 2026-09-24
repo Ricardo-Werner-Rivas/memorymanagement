@@ -1,6 +1,5 @@
 """
-# Module `cleaning`
-Implements the class `Cleaner` to keep track of the references and erase it easily.
+Implements the class `Cleaner` to keep track of the references and erase them easily.
 ## Overview
 Initialize a `Cleaner` object:
 ```
@@ -36,6 +35,31 @@ Flagged: ["x","y","z"]
 Excluded: []
 
 Not delete: <list(vars(modules["main"]))> # Unchanged since initialization
+```
+To delete these variables from memory, use the `clean()` method:
+```
+# Cleans memory
+cleaner.clean()
+
+# Print again the `Cleaner` instance
+print(cleaner)
+```
+The output will now be:
+```
+Flagged: []
+
+Excluded: []
+
+Not delete: <list(vars(modules["main"]))> # Unchanged since initialization
+```
+And if we print the global variables:
+```
+print(list(globals()))
+```
+The output will be:
+```
+["Cleaner","cleaner"]
+```
 """
 # Imports
 from .core import Cleaner
