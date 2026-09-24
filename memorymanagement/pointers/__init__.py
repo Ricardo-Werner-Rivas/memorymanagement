@@ -1,5 +1,4 @@
 """
-# Module `pointers`
 A safe implementation of pointers written in pure Python.
 
 It is safe beacause it doesn't imitate the internal behaviour of C pointers because it could break the memory.
