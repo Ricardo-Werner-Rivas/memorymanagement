@@ -83,7 +83,7 @@ class Pointer(Generic[PT]):
     
     Literals are **not** supported because of it being useless. Literals do **not** work anymore.
     The only use for introducing a literal instead of a referenced value is for the class code to bind the instance
-    to an unknown reference pointing to the given value or to display all the references pointing to the given literal
+    to an unknown reference pointing to the given value or to display all the references pointing to the given literal, through the `get_refs` or `print_refs` methods,
     if there is more than one.
     """
     #* METHODS
@@ -110,17 +110,16 @@ class Pointer(Generic[PT]):
             # Take the global frame
             vars_dict=vars(modules["__main__"])
         
-        # Store hidden attributes
-        self._value=value # Pointer's value
-        self._vars_dict=vars_dict # Variables' frame
+        # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
+        self._vars_dict=vars_dict # Variables' frame
         
-        # If there is an instance's attribute to point to and it doesn't belong to the given value
-        if self._attr and self._attr not in dir(self._value):
-            # Raise an "AttributeError"
-            raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
-        # If a reference is given
-        if reference:
+        # If no value or reference is given
+        if not value and not reference:
+            # Raise a "ValueError"
+            raise ValueError("Either a value or a reference is needed")
+        # Else, if a reference is given
+        elif value and reference:
             # If the reference is in the variables' frame and points to the given value
             if reference in vars_dict and vars_dict[reference] is value:
                 # Store the reference in "name" local variable
@@ -133,7 +132,19 @@ class Pointer(Generic[PT]):
             elif vars_dict[reference] is not value:
                 # Raise a "ValueError"
                 raise ValueError(f"Name \"{reference}\" doesn't point to given value ({value})")
-        # Else
+        # Else, if only a reference is given
+        elif reference:
+            # If the given reference is in the variables' frame
+            if reference in vars_dict:
+                # Store the reference into local variable "name"
+                name=reference
+                # Store the value the reference is pointing to in argument "value"
+                value=vars_dict[reference]
+            # Else
+            else:
+                # Raise a "NameError"
+                raise NameError(f"Name \"{reference}\" is not defined")
+        # Else (only value)
         else:
             # Store every reference pointing to the given value
             name=[key for key,v in vars_dict.items() if v is value]
@@ -145,6 +156,13 @@ class Pointer(Generic[PT]):
         if self._name==None:
             # Raise a "NameError"
             raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+        # Set argument "value" as the pointer's value
+        self._value=value
+        
+        # If there is an instance's attribute to point to and it doesn't belong to the given value
+        if attr and attr not in dir(value):
+            # Raise an "AttributeError"
+            raise AttributeError(f"\"{attr}\" is not an attribute of \"{value}\"")
     
     # Point to
     def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
@@ -153,15 +171,15 @@ class Pointer(Generic[PT]):
         
         Arguments
         ---------
-        reference : `str`|`None`, Optional
-            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         value : `Any`|`None`, Optional
             Value to point to. If wanted class attribute, introduce just the class object.
+        reference : `str`|`None`, Optional
+            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         attr : `str`|`None`, Optional
             Attribute of the class if class object was passed through `reference` or `value`.
         """
         # If no reference or value is given
-        if not reference and not value:
+        if not value and not reference:
             # If an instance's attribute name is given
             if attr:
                 # If the attribute belongs to the pointer's value
@@ -220,8 +238,8 @@ class Pointer(Generic[PT]):
             else:
                 # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
-        # Else, if only a value is given
-        elif value:
+        # Else (only value)
+        else:
             # Store the given value and its references into their corresponding hidden attributes
             self._name,self._value=[key for key,v in self._vars_dict.items() if v is value],value
             # Modify the "_name" hidden attribute to be a string or "None"
