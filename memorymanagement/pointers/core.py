@@ -144,20 +144,25 @@ class Pointer(Generic[PT]):
             else:
                 # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
-        # Else (only value)
+        # Else, if only a value is given an it is between the variables' frame's values
+        elif value and value in vars_dict.values():
+            # Loop for the variables' frame
+            for key,v in vars_dict.items():
+                # If the current value is the given value
+                if v is value:
+                    # The current key is the reference
+                    name=key
+                    # Break
+                    break
+        # Else (value not referenced)
         else:
-            # Store every reference pointing to the given value
-            name=[key for key,v in vars_dict.items() if v is value]
-            # Set to "None" if no reference was found
-            name=name[0] if len(name)!=0 else None
-        # Store the reference in the hidden attribute "_name"
-        self._name=name
-        # If there is no reference
-        if self._name==None:
             # Raise a "NameError"
-            raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+            raise NameError(f"No reference is pointing to given value \"{value}\" ({value.__class__.__name__})")
+            
         # Set argument "value" as the pointer's value
         self._value=value
+        # Store the reference in the hidden attribute "_name"
+        self._name=name
         
         # If there is an instance's attribute to point to and it doesn't belong to the given value
         if attr and attr not in dir(value):
@@ -238,16 +243,16 @@ class Pointer(Generic[PT]):
             else:
                 # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
-        # Else (only value)
-        else:
-            # Store the given value and its references into their corresponding hidden attributes
-            self._name,self._value=[key for key,v in self._vars_dict.items() if v is value],value
-            # Modify the "_name" hidden attribute to be a string or "None"
-            self._name=self._name[0] if len(self._name)!=0 else None
-            # If no reference was found
-            if self._name==None:
-                # Raise a "NameError"
-                raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+        # Else, if only a value is given an it is between the variables' frame's values
+        elif value and value in self._vars_dict:
+            # Loop for the variables' frame
+            for key,v in self._vars_dict.items():
+                # If the current value is the given value
+                if v is value:
+                    # The current key is the reference and the given value is set as pointer's value
+                    self._name,self._value=key,value
+                    # Break
+                    break
             # If an instance's attribute name is given
             if attr:
                 # If the attribute belongs to the new value
@@ -258,6 +263,10 @@ class Pointer(Generic[PT]):
                 else:
                     # Raise an "AttributeError"
                     raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+        # Else (value not referenced)
+        else:
+            # Raise a "NameError"
+            raise NameError(f"No reference is pointing to given value \"{self._value}\"")
     
     # Get references
     def get_refs(self)->tuple[str]:
