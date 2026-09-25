@@ -83,7 +83,7 @@ class Pointer(Generic[PT]):
     
     Literals are **not** supported because of it being useless. Literals do **not** work anymore.
     The only use for introducing a literal instead of a referenced value is for the class code to bind the instance
-    to an unknown reference pointing to the given value or to display all the references pointing to the given literal
+    to an unknown reference pointing to the given value or to display all the references pointing to the given literal, through the `get_refs` or `print_refs` methods,
     if there is more than one.
     """
     #* METHODS
@@ -153,10 +153,10 @@ class Pointer(Generic[PT]):
         
         Arguments
         ---------
-        reference : `str`|`None`, Optional
-            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         value : `Any`|`None`, Optional
             Value to point to. If wanted class attribute, introduce just the class object.
+        reference : `str`|`None`, Optional
+            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         attr : `str`|`None`, Optional
             Attribute of the class if class object was passed through `reference` or `value`.
         """
