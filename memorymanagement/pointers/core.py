@@ -269,13 +269,13 @@ class Pointer(Generic[PT]):
         # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
     
-    # Print references
-    def print_refs(self):
-        """
-        Prints all the references pointing to the same current value of the pointer.
-        """
-        # Print all the references pointing to the pointer's value
-        print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
+    #// # Print references
+    #// def print_refs(self):
+    #//     """
+    #//     Prints all the references pointing to the same current value of the pointer.
+    #//     """
+    #//     # Print all the references pointing to the pointer's value
+    #//     print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
     
     # Switch reference
     def switch_ref(self,reference:str):
