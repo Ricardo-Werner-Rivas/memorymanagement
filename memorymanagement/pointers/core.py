@@ -15,8 +15,6 @@
 #* IMPORTS
 # Import "TypeVar" and "Generic"
 from typing import TypeVar,Generic
-# Import "modules" from "sys" package
-from sys import modules
 # Import "currentframe" from "inspect" package
 from inspect import currentframe
 # Define type with TypeVar
@@ -88,7 +86,7 @@ class Pointer(Generic[PT]):
     """
     #* METHODS
     # Constructor (__init__)
-    def __init__(self,value=None,reference:str|None=None,*,attr:str|None=None,local:bool=False):
+    def __init__(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
         Arguments
         ---------
@@ -101,18 +99,9 @@ class Pointer(Generic[PT]):
         local : `bool`, Optional
             Indicates if the value to point to is a local variable (`True` for yes and `False` for no). `False` by default.
         """
-        # If pointing to local variable
-        if local:
-            # Take the local frame
-            vars_dict=currentframe().f_back.f_locals
-        # Else
-        else:
-            # Take the global frame
-            vars_dict=vars(modules["__main__"])
-        
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
-        self._vars_dict=vars_dict # Variables' frame
+        self._vars_dict=vars_dict=currentframe().f_back.f_locals # Variables' frame
         
         # If no value or reference is given
         if not value and not reference:
@@ -144,20 +133,22 @@ class Pointer(Generic[PT]):
             else:
                 # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
-        # Else, if only a value is given an it is between the variables' frame's values
-        elif value and value in vars_dict.values():
-            # Loop for the variables' frame
-            for key,v in vars_dict.items():
-                # If the current value is the given value
-                if v is value:
-                    # The current key is the reference
-                    name=key
-                    # Break
-                    break
-        # Else (value not referenced)
+        # Else (only value)
         else:
-            # Raise a "NameError"
-            raise NameError(f"No reference is pointing to given value \"{value}\" ({value.__class__.__name__})")
+            # If the given value is between the variables' frame values
+            if value in vars_dict.values():
+                # Loop for the variables' frame
+                for key,v in vars_dict.items():
+                    # If the current value is the given value
+                    if v is value:
+                        # The current key is the reference
+                        name=key
+                        # Break
+                        break
+            # Else
+            else:
+                # Raise a "NameError"
+                raise NameError(f"No reference is pointing to given value \"{value}\" ({value.__class__.__name__})")
             
         # Set argument "value" as the pointer's value
         self._value=value
@@ -243,30 +234,32 @@ class Pointer(Generic[PT]):
             else:
                 # Raise a "NameError"
                 raise NameError(f"Name \"{reference}\" is not defined")
-        # Else, if only a value is given an it is between the variables' frame's values
-        elif value and value in self._vars_dict:
-            # Loop for the variables' frame
-            for key,v in self._vars_dict.items():
-                # If the current value is the given value
-                if v is value:
-                    # The current key is the reference and the given value is set as pointer's value
-                    self._name,self._value=key,value
-                    # Break
-                    break
-            # If an instance's attribute name is given
-            if attr:
-                # If the attribute belongs to the new value
-                if attr in dir(self._value):
-                    # Store the attribute name into its corresponding hidden attribute
-                    self._attr=attr
-                # Else
-                else:
-                    # Raise an "AttributeError"
-                    raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
-        # Else (value not referenced)
+        # Else (only value)
         else:
-            # Raise a "NameError"
-            raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+            # If the given value is between the variables' frame's values
+            if value in self._vars_dict:
+                # Loop for the variables' frame
+                for key,v in self._vars_dict.items():
+                    # If the current value is the given value
+                    if v is value:
+                        # The current key is the reference and the given value is set as pointer's value
+                        self._name,self._value=key,value
+                        # Break
+                        break
+                # If an instance's attribute name is given
+                if attr:
+                    # If the attribute belongs to the new value
+                    if attr in dir(self._value):
+                        # Store the attribute name into its corresponding hidden attribute
+                        self._attr=attr
+                    # Else
+                    else:
+                        # Raise an "AttributeError"
+                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+            # Else
+            else:
+                # Raise a "NameError"
+                raise NameError(f"No reference is pointing to given value \"{self._value}\"")
     
     # Get references
     def get_refs(self)->tuple[str]:
@@ -582,7 +575,7 @@ class Pointer(Generic[PT]):
     #* SCREEN
     # Representation
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.value})"
+        return f"{self.__class__.__name__}({self.value},{self.reference},attr={self.attr})"
     
     # HTML representation
     def _repr_html_(self):
