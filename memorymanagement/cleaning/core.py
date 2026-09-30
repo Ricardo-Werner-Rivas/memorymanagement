@@ -14,7 +14,7 @@
 
 #* IMPORTS
 # modules from sys
-from sys import modules
+from inspect import currentframe
 
 #* MAIN CLASS
 # Class "Cleaner"
@@ -77,18 +77,18 @@ class Cleaner:
         flagged : `list[str]`, Optional
             List of variables to be erased from memory. Empty list by default.
         """
-        # Store variables' dictionary (globals() from "__main__")
-        self._vars_dict=vars(modules["__main__"])
+        # Store variables' dictionary
+        self._vars_dict=currentframe().f_back.f_locals
         # If a "not_delete" list is not passed
         if not not_delete:
-            # Take the list of global variables of the main module
+            # Take the list of variables' dictionay's keys
             not_delete=list(self._vars_dict)
-        # Loop through the global variables' dictionary of the main module
+        # Loop through the variables' dictionary
         for key,value in self._vars_dict.copy().items():
             # Delete every other "Cleaner" object
             if isinstance(value,Cleaner) and key in self._vars_dict.keys():
                 del self._vars_dict[key]
-        # Declare the main attributes
+        # Declare the main hidden attributes
         self._not_delete=not_delete.copy()
         self._excluded=excluded.copy()
         self._flagged=flagged.copy()
@@ -115,7 +115,7 @@ class Cleaner:
                 # Make it a list
                 exclude=[exclude]
             # Introduce the excluded variables into the corresponding lists
-            self._excluded.extend(tuple(var for var in exclude if var not in self._excluded))
+            self._excluded.extend(tuple(var for var in exclude if var not in self._excluded and var not in self._not_delete))
         # If the are excluded variables to include
         if include:
             # If "include" content is a string
@@ -141,7 +141,7 @@ class Cleaner:
             Stream of references to be excluded.
         """
         # Loop for the variables to exclude
-        for var in exclude:
+        for var in exclude and var not in self._not_delete:
             # Remove from the "flagged" list
             while var in self._flagged:
                 self._flagged.remove(var)
@@ -253,7 +253,7 @@ class Cleaner:
         """
         # Loop for "flagged" list
         for var in self._flagged:
-            # If current variable name is between the global variables of "__main__"
+            # If current variable name is in the variables dictionay
             if var in self._vars_dict:
                 # Delete variable
                 del self._vars_dict[var]
