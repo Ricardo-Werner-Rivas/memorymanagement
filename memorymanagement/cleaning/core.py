@@ -84,7 +84,13 @@ class Cleaner:
             # Try
             try:
                 # To keep travel through conected frames until the last one is reached
-                frame=frame.f_back
+                if frame.f_back: # If last not reached
+                    # Advance to the next frame
+                    frame=frame.f_back
+                # Else
+                else:
+                    # Raise an exception
+                    raise Exception
             # If any exception is raised
             except:
                 # Break the infinite loop
