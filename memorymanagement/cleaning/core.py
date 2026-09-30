@@ -141,12 +141,12 @@ class Cleaner:
             Stream of references to be excluded.
         """
         # Loop for the variables to exclude
-        for var in exclude and var not in self._not_delete:
+        for var in exclude:
             # Remove from the "flagged" list
             while var in self._flagged:
                 self._flagged.remove(var)
             # Introduce variable into the "excluded" list
-            if var not in self._excluded:
+            if var not in self._excluded and var not in self._not_delete:
                 self._excluded.append(var)
     
     # Include
@@ -160,9 +160,9 @@ class Cleaner:
             Stream of references to be included.
         """
         # Loop for the variables to "include"
-        for var in include and var not in self.not_delete:
+        for var in include:
             # Introduce variable into the "flagged" list
-            if var not in self._flagged:
+            if var not in self._flagged and var not in self.not_delete:
                 self._flagged.append(var)
             # Remove from excluded list
             while var in self._excluded:
