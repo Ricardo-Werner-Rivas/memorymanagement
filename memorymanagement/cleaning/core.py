@@ -14,7 +14,7 @@
 
 #* IMPORTS
 # modules from sys
-from sys import modules
+from inspect import currentframe
 
 #* MAIN CLASS
 # Class "Cleaner"
@@ -77,15 +77,29 @@ class Cleaner:
         flagged : `list[str]`, Optional
             List of variables to be erased from memory. Empty list by default.
         """
+        # Obtain the original frame from which Cleaner class is called
+        frame=currentframe().f_back
+        # Infinite loop
+        while True:
+            # Try
+            try:
+                # To keep travel through conected frames until the last one is reached
+                frame=frame.f_back
+            # If any exception is raised
+            except:
+                # Break the infinite loop
+                break
+        # Take the locals() dictionary
+        self._vars_dict=frame.f_locals
         # If a "not_delete" list is not passed
         if not not_delete:
             # Take the list of global variables of the main module
-            not_delete=list(vars(modules["__main__"]))
+            not_delete=list(self._vars_dict)
         # Loop through the global variables' dictionary of the main module
-        for key,value in vars(modules["__main__"]).copy().items():
+        for key,value in self._vars_dict.copy().items():
             # Delete every other "Cleaner" object
-            if isinstance(value,Cleaner) and key in vars(modules["__main__"]).keys():
-                del vars(modules["__main__"])[key]
+            if isinstance(value,Cleaner) and key in self._vars_dict.keys():
+                del self._vars_dict[key]
         # Declare the main attributes
         self._not_delete=not_delete.copy()
         self._excluded=excluded.copy()
@@ -113,7 +127,7 @@ class Cleaner:
                 # Make it a list
                 exclude=[exclude]
             # Introduce the excluded variables into the corresponding lists
-            self._excluded.extend([var for var in exclude if var not in self._excluded])
+            self._excluded.extend(tuple(var for var in exclude if var not in self._excluded))
         # If the are excluded variables to include
         if include:
             # If "include" content is a string
@@ -126,7 +140,7 @@ class Cleaner:
                 while var in self._excluded:
                     self._excluded.remove(var)
         # Rebuild the "flagged" list
-        self._flagged=[var for var in list(vars(modules["__main__"]))if var not in self.not_delete and var not in self.excluded]
+        self._flagged=[var for var in self._vars_dict if var not in self.not_delete and var not in self.excluded]
     
     # Exclude
     def exclude(self,*exclude:str):
@@ -158,7 +172,7 @@ class Cleaner:
             Stream of references to be included.
         """
         # Loop for the variables to "include"
-        for var in include:
+        for var in include and var not in self.not_delete:
             # Introduce variable into the "flagged" list
             if var not in self._flagged:
                 self._flagged.append(var)
@@ -251,10 +265,10 @@ class Cleaner:
         """
         # Loop for "flagged" list
         for var in self._flagged:
-            # If current variable name is between the global variables of "__main__"
-            if var in list(vars(modules["__main__"])):
+            # If current variable name is between the variables' dictionary
+            if var in self._vars_dict:
                 # Delete variable
-                del vars(modules["__main__"])[var]
+                del self._vars_dict[var]
         # Clear "flagged" list
         self._flagged.clear()
     
@@ -264,9 +278,9 @@ class Cleaner:
     # Getter
     def name(self):
         # If reference is not set or it doesn't point to the "Cleaner" object
-        if not self._name or vars(modules["__main__"])[self._name] is not self:
+        if not self._name or self._vars_dict[self._name] is not self:
             # Loop for variables dictionary
-            for key,value in vars(modules["__main__"]).items():
+            for key,value in self._vars_dict.items():
                 # If current value is the "Cleaner" object
                 if value is self:
                     # Store the reference
@@ -277,6 +291,7 @@ class Cleaner:
             if not self._name:
                 # Raise a "ReferenceError"
                 raise ReferenceError("\"Cleaner\" object is not referenced")
+        # Return the reference
         return self._name
     
     # Variables not to be deleted
