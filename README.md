@@ -14,7 +14,7 @@ The pointer itself. Imitates the behaviour of C pointers. `Pointer` points to a 
 #### Decorator `pointerize`
 Allows functions to receive pointers instead of values.
 ## Installation
-You can install the development version of the `memorymanagement` package from **TestPyPI** as follows:
+You can install the development version of the `memorymanagement` package from [**TestPyPI**](https://test.pypi.org/project/memorymanagement/) as follows:
 ```powershell
 pip install --index-url https://test.pypi.org/simple/ memorymanagement
 ```
@@ -31,14 +31,14 @@ Right after imports are done, I recommend to initialize an instance of class `Cl
 # Initialize cleaner object
 cleaner=Cleaner()
 ```
-Create, for example, these global variables:
+Create, for example, these variables (can be global or local):
 ```py
 value_1=10
 value_2=50
 value_3=100
 ```
 Update the list of flagged references like one of the following:
-* Including all new global variables:
+* Including all new variables:
     ```py
     cleaner.update()
     print(cleaner.flagged)
@@ -159,7 +159,7 @@ Value: 20
 To contribute to this project fork this repository and clone your fork. Pull requests will be revised by the owner before being accepted or rejected.
 
 There are two branches:
-* **PyPI**: the main branch, for releases.
-* **TestPyPI**: for pre-releases or development versions.
+* [**PyPI**](https://github.com/Ricardo-Werner-Rivas/memorymanagement/tree/PyPI): the main branch, for releases.
+* [**TestPyPI**](https://github.com/Ricardo-Werner-Rivas/memorymanagement/tree/TestPyPI): for pre-releases or development versions.
 
-Pull requests from TestPyPI to PyPI will only be done by the owner when a new release is ready.
+Pull requests from **TestPyPI** to **PyPI** will only be done by the owner when a new release is ready.
