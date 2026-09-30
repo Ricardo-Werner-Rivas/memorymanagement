@@ -14,7 +14,7 @@
 
 #* IMPORTS
 # modules from sys
-from inspect import currentframe
+from sys import modules
 
 #* MAIN CLASS
 # Class "Cleaner"
@@ -77,26 +77,8 @@ class Cleaner:
         flagged : `list[str]`, Optional
             List of variables to be erased from memory. Empty list by default.
         """
-        # Obtain the original frame from which Cleaner class is called
-        frame=currentframe().f_back
-        # Infinite loop
-        while True:
-            # Try
-            try:
-                # To keep travel through conected frames until the last one is reached
-                if frame.f_back: # If last not reached
-                    # Advance to the next frame
-                    frame=frame.f_back
-                # Else
-                else:
-                    # Raise an exception
-                    raise Exception
-            # If any exception is raised
-            except:
-                # Break the infinite loop
-                break
-        # Take the locals() dictionary
-        self._vars_dict=frame.f_locals
+        # Store variables' dictionary (globals() from "__main__")
+        self._vars_dict=vars(modules["__main__"])
         # If a "not_delete" list is not passed
         if not not_delete:
             # Take the list of global variables of the main module
@@ -271,7 +253,7 @@ class Cleaner:
         """
         # Loop for "flagged" list
         for var in self._flagged:
-            # If current variable name is between the variables' dictionary
+            # If current variable name is between the global variables of "__main__"
             if var in self._vars_dict:
                 # Delete variable
                 del self._vars_dict[var]
@@ -283,20 +265,10 @@ class Cleaner:
     @property
     # Getter
     def name(self):
-        frame=currentframe().f_back
-        while True:
-            try:
-                if frame.f_back:
-                    frame=frame.f_back
-                else:
-                    raise Exception
-            except:
-                break
-        vars_dict=frame.f_locals
         # If reference is not set or it doesn't point to the "Cleaner" object
-        if not self._name or vars_dict[self._name] is not self:
+        if not self._name or self._vars_dict[self._name] is not self:
             # Loop for variables dictionary
-            for key,value in vars_dict.items():
+            for key,value in self._vars_dict.items():
                 # If current value is the "Cleaner" object
                 if value is self:
                     # Store the reference
