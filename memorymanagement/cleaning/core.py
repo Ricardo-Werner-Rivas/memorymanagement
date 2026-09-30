@@ -259,10 +259,10 @@ class Cleaner:
         self._flagged.clear()
     
     #* PROPERTIES
-    # Variables not to be deleted
+    # Reference pointing to Cleaner object
     @property
     # Getter
-    def not_delete(self):
+    def name(self):
         # If reference is not set or it doesn't point to the "Cleaner" object
         if not self._name or vars(modules["__main__"])[self._name] is not self:
             # Loop for variables dictionary
@@ -271,22 +271,22 @@ class Cleaner:
                 if value is self:
                     # Store the reference
                     self._name=key
-                    # Add it to the "not_delete" list
-                    self._not_delete.append(self._name)
                     # Break
                     break
-                # Else
-                else:
-                    # Reference is still empty
-                    self._name=None
             # If reference remains empty
             if not self._name:
                 # Raise a "ReferenceError"
                 raise ReferenceError("\"Cleaner\" object is not referenced")
-        # Else, if reference is not in the "not_delete" list
-        elif self._name not in self._not_delete:
+        return self._name
+    
+    # Variables not to be deleted
+    @property
+    # Getter
+    def not_delete(self):
+        # If reference is not in the "not_delete" list
+        if self.name not in self._not_delete:
             # Add reference to the "not_delete" list
-            self._not_delete.append(self._name)
+            self._not_delete.append(self.name)
         # Return a shallow copy of the "not_delete" list
         return self._not_delete.copy()
     #^ No setter
