@@ -83,6 +83,14 @@ class Cleaner:
         if not not_delete:
             # Take the list of variables' dictionay's keys
             not_delete=list(self._vars_dict)
+        # If variables were excluded
+        if len(excluded)>0:
+            # Store only the ones which are not already in the "not_delete" list
+            excluded=[var for var in excluded if var not in not_delete]
+        # If variables were flagged
+        if len(flagged)>0:
+            # Store only the ones which are not in the "not_delete" list
+            flagged=[var for var in flagged if var not in not_delete]
         # Loop through the variables' dictionary
         for key,value in self._vars_dict.copy().items():
             # Delete every other "Cleaner" object
