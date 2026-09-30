@@ -14,7 +14,7 @@
 
 #* IMPORTS
 # modules from sys
-from sys import modules
+from inspect import currentframe
 
 #* MAIN CLASS
 # Class "Cleaner"
@@ -77,15 +77,17 @@ class Cleaner:
         flagged : `list[str]`, Optional
             List of variables to be erased from memory. Empty list by default.
         """
+        # Store the reference variables' dictionary
+        vars_dict=currentframe().f_back.f_locals
         # If a "not_delete" list is not passed
         if not not_delete:
             # Take the list of global variables of the main module
-            not_delete=list(vars(modules["__main__"]))
+            not_delete=list(vars_dict)
         # Loop through the global variables' dictionary of the main module
-        for key,value in vars(modules["__main__"]).copy().items():
+        for key,value in vars_dict.copy().items():
             # Delete every other "Cleaner" object
-            if isinstance(value,Cleaner) and key in vars(modules["__main__"]).keys():
-                del vars(modules["__main__"])[key]
+            if isinstance(value,Cleaner) and key in vars_dict.keys():
+                del vars_dict[key]
         # Declare the main attributes
         self._not_delete=not_delete.copy()
         self._excluded=excluded.copy()
@@ -126,7 +128,7 @@ class Cleaner:
                 while var in self._excluded:
                     self._excluded.remove(var)
         # Rebuild the "flagged" list
-        self._flagged=[var for var in list(vars(modules["__main__"]))if var not in self.not_delete and var not in self.excluded]
+        self._flagged=[var for var in list(currentframe().f_back.f_locals)if var not in self.not_delete and var not in self.excluded]
     
     # Exclude
     def exclude(self,*exclude:str):
@@ -158,7 +160,7 @@ class Cleaner:
             Stream of references to be included.
         """
         # Loop for the variables to "include"
-        for var in include:
+        for var in include and var not in self.not_delete and var not in self.excluded:
             # Introduce variable into the "flagged" list
             if var not in self._flagged:
                 self._flagged.append(var)
@@ -249,12 +251,14 @@ class Cleaner:
         Culminates the cleaning process.
         Erases all the flagged references.
         """
+        # Declare reference variables' dictionary
+        vars_dict=currentframe().f_back.f_locals
         # Loop for "flagged" list
         for var in self._flagged:
             # If current variable name is between the global variables of "__main__"
-            if var in list(vars(modules["__main__"])):
+            if var in vars_dict:
                 # Delete variable
-                del vars(modules["__main__"])[var]
+                del vars_dict[var]
         # Clear "flagged" list
         self._flagged.clear()
     
@@ -263,10 +267,12 @@ class Cleaner:
     @property
     # Getter
     def not_delete(self):
+        # Declare reference variables' dictionary
+        vars_dict=currentframe().f_back.f_locals
         # If reference is not set or it doesn't point to the "Cleaner" object
-        if not self._name or vars(modules["__main__"])[self._name] is not self:
+        if not self._name or vars_dict[self._name] is not self:
             # Loop for variables dictionary
-            for key,value in vars(modules["__main__"]).items():
+            for key,value in vars_dict.items():
                 # If current value is the "Cleaner" object
                 if value is self:
                     # Store the reference
