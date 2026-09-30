@@ -283,10 +283,20 @@ class Cleaner:
     @property
     # Getter
     def name(self):
+        frame=currentframe().f_back
+        while True:
+            try:
+                if frame.f_back:
+                    frame=frame.f_back
+                else:
+                    raise Exception
+            except:
+                break
+        vars_dict=frame.f_locals
         # If reference is not set or it doesn't point to the "Cleaner" object
-        if not self._name or self._vars_dict[self._name] is not self:
+        if not self._name or vars_dict[self._name] is not self:
             # Loop for variables dictionary
-            for key,value in self._vars_dict.items():
+            for key,value in vars_dict.items():
                 # If current value is the "Cleaner" object
                 if value is self:
                     # Store the reference
