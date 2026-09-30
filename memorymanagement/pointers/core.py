@@ -49,8 +49,7 @@ class Pointer(Generic[PT]):
         Could require an input from the user to introduce the name of the variable if more than one is found.
     vars_dict : `dict[str,Any]`, Hidden
         Dictionary of variables.
-        `vars(modules["__main__"])` if pointing to a global variable and
-        `inspect.currentframe().f_back.f_locals` if pointing to a local variable.
+        Set to `inspect.currentframe().f_back.f_locals`.
     
     Methods
     -------
@@ -143,7 +142,7 @@ class Pointer(Generic[PT]):
                     if v is value:
                         # The current key is the reference
                         name=key
-                        # Break
+                        # Break loop
                         break
             # Else
             else:
@@ -155,7 +154,7 @@ class Pointer(Generic[PT]):
         # Store the reference in the hidden attribute "_name"
         self._name=name
         
-        # If there is an instance's attribute to point to and it doesn't belong to the given value
+        # If there is an instance's attribute to point to but it doesn't belong to the given value
         if attr and attr not in dir(value):
             # Raise an "AttributeError"
             raise AttributeError(f"\"{attr}\" is not an attribute of \"{value}\"")
@@ -268,14 +267,6 @@ class Pointer(Generic[PT]):
         """
         # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
-    
-    #// # Print references
-    #// def print_refs(self):
-    #//     """
-    #//     Prints all the references pointing to the same current value of the pointer.
-    #//     """
-    #//     # Print all the references pointing to the pointer's value
-    #//     print(tuple(key for key,v in self._vars_dict.items() if v is self._value))
     
     # Switch reference
     def switch_ref(self,reference:str):
