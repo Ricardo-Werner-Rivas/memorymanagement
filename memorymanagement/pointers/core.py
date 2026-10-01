@@ -357,7 +357,7 @@ class Pointer(Generic[PT]):
     # Reference
     @property
     # Getter
-    def reference(self):
+    def reference(self)->str:
         # Return the stored reference
         return self._name
     #^ No setter
@@ -365,7 +365,7 @@ class Pointer(Generic[PT]):
     
     # Attribute
     @property
-    def attr(self):
+    def attr(self)->str:
         # Return the stored attribute name
         return self._attr
     #^ No setter
