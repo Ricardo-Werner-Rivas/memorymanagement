@@ -281,7 +281,7 @@ class Cleaner:
     # Reference pointing to "Cleaner" object
     @property
     # Getter
-    def name(self):
+    def name(self)->str:
         # If reference is not set or it doesn't point to the "Cleaner" object
         if not self._name or self._vars_dict[self._name] is not self:
             # Loop for variables dictionary
@@ -304,7 +304,7 @@ class Cleaner:
     # Variables not to be deleted
     @property
     # Getter
-    def not_delete(self):
+    def not_delete(self)->list[str]:
         # If reference is not in the "not_delete" list
         if self.name not in self._not_delete:
             # Add reference to the "not_delete" list
@@ -317,7 +317,7 @@ class Cleaner:
     # Excluded variables
     @property
     # Getter
-    def excluded(self):
+    def excluded(self)->list[str]:
         # Return a shallow copy of the "excluded" list
         return self._excluded.copy()
     #^ No setter
@@ -326,13 +326,18 @@ class Cleaner:
     # Flagged variables
     @property
     # Getter
-    def flagged(self):
+    def flagged(self)->list[str]:
         # Return a shallow copy of the "flagged" list
         return self._flagged.copy()
     #^ No setter
     #^ No deleter
     
     #* SCREEN DUNDER METHODS
+    # __repr__
+    def __repr__(self):
+        # Return a string able to rebuild the instance if needed
+        return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
+    
     # __str__
     def __str__(self):
         # Return a string with the instance's components
@@ -343,8 +348,3 @@ class Cleaner:
         
         Not delete: {self.not_delete}
         """
-    
-    # __repr__
-    def __repr__(self):
-        # Return a string able to rebuild the instance if needed
-        return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
