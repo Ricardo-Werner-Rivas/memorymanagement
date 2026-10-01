@@ -117,7 +117,7 @@ class Pointer(Generic[PT]):
             # Else, if the reference doesn't point to the given value
             elif vars_dict[reference] is not value:
                 # Raise a "ValueError"
-                raise ValueError(f"Name \"{reference}\" doesn't point to given value ({value})")
+                raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
         # Else, if only a reference is given
         elif reference:
             # If the given reference is in the variables' frame
@@ -145,7 +145,7 @@ class Pointer(Generic[PT]):
             # Else
             else:
                 # Raise a "NameError"
-                raise NameError(f"No reference is pointing to given value \"{value}\" ({value.__class__.__name__})")
+                raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
             
         # Set argument "value" as the pointer's value
         self._value=value
@@ -155,7 +155,7 @@ class Pointer(Generic[PT]):
         # If there is an instance's attribute to point to but it doesn't belong to the given value
         if attr and attr not in dir(value):
             # Raise an "AttributeError"
-            raise AttributeError(f"\"{attr}\" is not an attribute of \"{value}\"")
+            raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
     
     # Point to
     def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
@@ -182,7 +182,7 @@ class Pointer(Generic[PT]):
                 # Else
                 else:
                     # Raise an "AttributeError"
-                    raise AttributeError(f"\"{attr}\" isn't an attribute of the variable \"{self._name}\" with value \"{self._value}\" (\"{self._value.__class__.__name__}\")")
+                    raise AttributeError(f"\"{attr}\" isn't an attribute of the name \"{self._name}\" with value {self._value} ({self._value.__class__.__name__})")
             # Else
             else:
                 # Raise a "ValueError"
@@ -202,7 +202,7 @@ class Pointer(Generic[PT]):
                     # Else
                     else:
                         # Raise an "AttributeError"
-                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+                        raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
             # Else, if the reference isn't in the variables' frame
             elif reference not in self._vars_dict:
                 # Raise a "NameError"
@@ -210,7 +210,7 @@ class Pointer(Generic[PT]):
             # Else, if the reference doesn't point to the given value
             elif self._vars_dict[reference] is not value:
                 # Raise a "ValueError"
-                raise ValueError(f"Name \"{reference}\" doesn't point to given value \"{value}\"")
+                raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
         # Else, if only a reference is given
         elif reference:
             # If the reference is in the variables' frame
@@ -226,7 +226,7 @@ class Pointer(Generic[PT]):
                     # Else
                     else:
                         # Raise an "AttributeError"
-                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+                        raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
             # Else
             else:
                 # Raise a "NameError"
@@ -252,11 +252,11 @@ class Pointer(Generic[PT]):
                     # Else
                     else:
                         # Raise an "AttributeError"
-                        raise AttributeError(f"\"{attr}\" is not an attribute of \"{self._value}\"")
+                        raise AttributeError(f"\"{attr}\" is not an attribute of {self._value.__class__.__name__} {self._value}")
             # Else
             else:
                 # Raise a "NameError"
-                raise NameError(f"No reference is pointing to given value \"{self._value}\"")
+                raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
     
     # Get references
     def get_refs(self)->tuple[str]:
@@ -284,7 +284,7 @@ class Pointer(Generic[PT]):
         # If the given reference is in the variables' frame but it doesn' point to current the pointer's value
         if reference in self._vars_dict and self._vars_dict[reference] is not self.value:
             # Raise a "ValueError"
-            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value \"{self.value}\"")
+            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self._value} ({self._value.__class__.__name__})")
         # Else, if the given reference is not in the variables' frame
         elif reference not in self._vars_dict:
             # Raise a "NameError"
