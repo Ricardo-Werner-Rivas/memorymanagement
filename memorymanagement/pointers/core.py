@@ -55,10 +55,10 @@ class Pointer(Generic[PT]):
     -------
         **point_to**
             Changes the variable or attribute the pointer is pointed to.
+        **get_refs**
+            Returns all the references pointing to the pointer's value.
         **switch_ref**
-            Allows to switch between the references pointing to the same value.
-        **print_refs**
-            Prints all the references pointing to the value.
+            Allows to switch between the references pointing to the pointer's value.
     
     Properties
     ----------
@@ -95,8 +95,6 @@ class Pointer(Generic[PT]):
             Name linked to the value to point to. Useful in case there are multiple references pointing to the same value.
         attr : `str`|`None`, Optional
             Attribute of the class instance to which you want to point. Leave empty if `value` is not a class instance.
-        local : `bool`, Optional
-            Indicates if the value to point to is a local variable (`True` for yes and `False` for no). `False` by default.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
@@ -263,7 +261,12 @@ class Pointer(Generic[PT]):
     # Get references
     def get_refs(self)->tuple[str]:
         """
-        Gets all the references pointing to the same current value of the `Pointer` object.
+        Gets all the references pointing to the current value of the `Pointer` object.
+        
+        Returns
+        -------
+        tuple[str]
+            References pointing to current pointer's value
         """
         # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
@@ -357,12 +360,16 @@ class Pointer(Generic[PT]):
     def reference(self):
         # Return the stored reference
         return self._name
+    #^ No setter
+    #^ No deleter
     
     # Attribute
     @property
     def attr(self):
         # Return the stored attribute name
         return self._attr
+    #^ No setter
+    #^ No deleter
     
     #* INDEXATION
     # Getter
