@@ -341,10 +341,10 @@ class Cleaner:
     # __str__
     def __str__(self):
         # Return a string with the instance's components
-        return f"""
-        Flagged: {self.flagged}
-        
-        Excluded: {self.excluded}
-        
-        Not delete: {self.not_delete}
-        """
+        return f"""\
+Flagged: {self.flagged}
+
+Excluded: {self.excluded}
+
+Not delete: {self.not_delete}\
+"""
