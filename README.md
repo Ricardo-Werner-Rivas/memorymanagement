@@ -14,7 +14,7 @@ The pointer itself. Imitates the behaviour of C pointers. `Pointer` points to a 
 #### Decorator `pointerize`
 Allows functions to receive pointers instead of values.
 ## Installation
-You can install the `memorymanagement` package from **PyPI** as follows:
+You can install the `memorymanagement` package from [**PyPI**](https://pypi.org/project/memorymanagement) as follows:
 ```powershell
 pip install memorymanagement
 ```
@@ -158,10 +158,10 @@ Value: 20
 To contribute to this project fork this repository and clone your fork. Pull requests will be revised by the owner before being accepted or rejected.
 
 There are two branches:
-* **PyPI**: the main branch, for releases.
-* **TestPyPI**: for pre-releases or development versions.
+* [**PyPI**](https://github.com/Ricardo-Werner-Rivas/memorymanagement/tree/PyPI): the main branch, for releases.
+* [**TestPyPI**](https://github.com/Ricardo-Werner-Rivas/memorymanagement/tree/TestPyPI): for pre-releases or development versions.
 
-Pull requests from TestPyPI to PyPI will only be done by the owner when a new release is ready.
+Pull requests from **TestPyPI** to **PyPI** will only be done by the owner when a new release is ready.
 
 ### Branch merging
 To merge branches properly with PyPI branch in your cloned repository, you will need to have the `.gitattributes` file in the PyPI branch and execute the following commands, while in repo directory, in your PowerShell:
