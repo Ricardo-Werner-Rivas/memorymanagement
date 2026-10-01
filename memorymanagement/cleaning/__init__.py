@@ -5,14 +5,14 @@ Initialize a `Cleaner` object:
 ```
 # Default arguments' values
 cleaner=Cleaner(
-    not_delete:list[str]=list(vars(modules["main"])), # List of global variables at that moment (modules comes from sys library)
+    not_delete:list[str]=list(currentframe().f_back.f_locals), # List of variables at that moment (global or local)
     excluded:list[str]=[], # Empty list to be modified later if you need
     flagged:list[str]=[] # List of references to undo
 )
 ```
 Now `cleaner` has the following attributes:
 ```
-cleaner._not_delete=list(vars(modules["main"])) # At initialization moment
+cleaner._not_delete=list(currentframe().f_back.f_locals)) # At initialization moment
 cleaner._excluded=[] # Wasn't asked to exclude any reference.
 cleaner._flagged=[] # Wasn't asked to include any reference.
 ```
@@ -34,7 +34,7 @@ Flagged: ["x","y","z"]
 
 Excluded: []
 
-Not delete: <list(vars(modules["main"]))> # Unchanged since initialization
+Not delete: <list(currentframe().f_back.f_locals)> # Unchanged since initialization
 ```
 To delete these variables from memory, use the `clean()` method:
 ```
@@ -50,7 +50,7 @@ Flagged: []
 
 Excluded: []
 
-Not delete: <list(vars(modules["main"]))> # Unchanged since initialization
+Not delete: <list(currentframe().f_back.f_locals)> # Unchanged since initialization
 ```
 And if we print the global variables:
 ```
@@ -58,7 +58,7 @@ print(list(globals()))
 ```
 The output will be:
 ```
-["Cleaner","cleaner"]
+["__name__", "__doc__", "__package__", "__loader__", "__builtins__", "Cleaner", "cleaner"]
 ```
 """
 # Imports
