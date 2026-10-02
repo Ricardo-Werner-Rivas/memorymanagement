@@ -24,15 +24,15 @@ from .core import Pointer
 
 #* DECORATORS
 # pointerize
-def pointerize(func):
+def pointerize(func:function):
     """
     Allows the decorated function to receive pointers instead of the normally expected values.
     
-    The decorated function is still able to receive its normally expected parameters.
+    The decorated function is still able to receive its normally expected arguments.
     
     Arguments
     ---------
-    func : `FunctionType`
+    func : `function`
         Decorated function.
     """
     #* IDENTITY MANAGEMENT

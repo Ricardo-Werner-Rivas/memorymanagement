@@ -79,12 +79,11 @@ class Pointer(Generic[PT]):
     Both global and local variables can be pointed at.
     
     Literals are **not** supported because of it being useless. Literals do **not** work anymore.
-    The only use for introducing a literal instead of a referenced value is for the class code to bind the instance
-    to an unknown reference pointing to the given value or to display all the references pointing to the given literal, through the `get_refs` or `print_refs` methods,
-    if there is more than one.
+    The only use for introducing a literal instead of a referenced value is for the class code to display all the references pointing to the given literal,
+    through the `get_refs` method, if there is more than one.
     """
     #* METHODS
-    # Constructor (__init__)
+    # __init__
     def __init__(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
         Arguments
@@ -157,7 +156,7 @@ class Pointer(Generic[PT]):
             # Raise an "AttributeError"
             raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
     
-    # Point to
+    # Point to another object
     def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
         Changes the address which the `Pointer` object points to.
