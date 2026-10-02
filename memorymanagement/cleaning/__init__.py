@@ -41,7 +41,7 @@ To delete these variables from memory, use the `clean()` method:
 # Cleans memory
 cleaner.clean()
 
-# Print again the `Cleaner` instance
+# Print the `Cleaner` instance again
 print(cleaner)
 ```
 The output will now be:
