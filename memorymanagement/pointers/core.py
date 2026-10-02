@@ -30,7 +30,8 @@ class Pointer(Generic[PT]):
     When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory adress.
     This way, all references pointing to the same non-mutable object don't change when the pointer is updated, avoiding a potential mess.
     
-    Non-mutable objects still change their memory adresses when re-referenced but the reference and the value stored in the pointer are forced to share memory adress.
+    Non-mutable objects still change their memory adresses when re-referenced,
+    but the reference and the value stored in the pointer are forced to share memory adress.
     
     Value and memory adress updates are not made in real-time, but the properties update the non-coincident values:
     * **Getter**: it updates its own value to the variable's one (if variable was given instead of literal).
@@ -88,12 +89,13 @@ class Pointer(Generic[PT]):
         """
         Arguments
         ---------
-        value : `Any`, Optional
+        value : `Any`|`None`, Optional
             Object to point to. If want to point to a class instance's atribute, pass to this argument the class instance without the atribute.
         reference : `str`|`None`, Optional
             Name linked to the value to point to. Useful in case there are multiple references pointing to the same value.
         attr : `str`|`None`, Optional
-            Attribute of the class instance to which you want to point. Leave empty if `value` is not a class instance.
+            Name of the class or instance attribute to which the pointer will point to.
+            Leave empty if the objective is to point to the instance itself instead of a single attribute.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
@@ -168,7 +170,8 @@ class Pointer(Generic[PT]):
         reference : `str`|`None`, Optional
             Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
         attr : `str`|`None`, Optional
-            Attribute of the class if class object was passed through `reference` or `value`.
+            Name of the class or instance attribute from the targeted object for the pointer to point to.
+            Leave empty if pointing to the object is desired instead of a single attribute.
         """
         # If no reference or value is given
         if not value and not reference:
@@ -265,7 +268,7 @@ class Pointer(Generic[PT]):
         Returns
         -------
         tuple[str]
-            References pointing to current pointer's value
+            References pointing to current pointer's value.
         """
         # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
@@ -278,7 +281,7 @@ class Pointer(Generic[PT]):
         Arguments
         ---------
         reference : `str`
-            Reference to switch the pointer to.
+            Reference, pointing to the current pointer's value, to switch the pointer to.
         """
         # If the given reference is in the variables' frame but it doesn' point to current the pointer's value
         if reference in self._vars_dict and self._vars_dict[reference] is not self.value:
@@ -296,6 +299,24 @@ class Pointer(Generic[PT]):
     @property
     # Getter
     def value(self):
+        """
+        Gets, sets or deletes the pointer's value.
+        It also affects the original object if needed.
+        If an attribute name was originally given, the attribute value is affected instead of the given instance.
+        
+        Arguments
+        ---------
+        value : `Any`|`None`
+            **Only for setter**.
+            New value to set the pointer to.
+        
+        Returns
+        -------
+        Any
+            **Only for getter**.
+            Object or attribute value the pointer is pointing to.
+            It is returned as-is, instead of returning a copy, so it can be manipulated thorugh its own methods.
+        """
         # If an instance's attribute name is stored
         if self.attr:
             # If the stored reference is not in the variables' frame
@@ -357,6 +378,14 @@ class Pointer(Generic[PT]):
     @property
     # Getter
     def reference(self)->str:
+        """
+        Gets the self reference of the pointer.
+        
+        Returns
+        -------
+        str
+            Reference pointing to the `Pointer` instance.
+        """
         # Return the stored reference
         return self._name
     #^ No setter
@@ -364,7 +393,15 @@ class Pointer(Generic[PT]):
     
     # Attribute
     @property
-    def attr(self)->str:
+    def attr(self)->str|None:
+        """
+        Gets the name of the attribute the pointer is pointing to.
+        
+        Returns
+        -------
+        str|None
+            Name of instance or class attribute the pointer is pointing to.
+        """
         # Return the stored attribute name
         return self._attr
     #^ No setter
