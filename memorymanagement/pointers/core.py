@@ -315,7 +315,7 @@ class Pointer(Generic[PT]):
         Any
             **Only for getter**.
             Object or attribute value the pointer is pointing to.
-            It is returned as-is, instead of returning a copy, so it can be manipulated thorugh its own methods.
+            It is returned as-is, instead of a copy, so it can be manipulated thorugh its own methods.
         """
         # If an instance's attribute name is stored
         if self.attr:
