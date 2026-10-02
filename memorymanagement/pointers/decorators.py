@@ -19,21 +19,28 @@ from sys import settrace
 from inspect import signature
 # wraps (functools)
 from functools import wraps
-# Pointer (from the core of the package)
+# Pointer (module's core)
 from .core import Pointer
 
 #* DECORATORS
 # pointerize
-def pointerize(func):
+def pointerize(func:function):
     """
     Allows the decorated function to receive pointers instead of the normally expected values.
+    The pointers' values are updated to the last value of the corresponding function's argument once the function ends.
     
-    The decorated function is still able to receive its normally expected parameters.
+    The decorated function is still able to receive its normally expected arguments.
+    It also keeps its identity and documentation.
     
     Arguments
     ---------
-    func : `FunctionType`
+    func : `function`
         Decorated function.
+    
+    Returns
+    -------
+    _Wrapped
+        Wrapped function able to receive pointers.
     """
     #* IDENTITY MANAGEMENT
     # Makes the decorating function to keep its identity
