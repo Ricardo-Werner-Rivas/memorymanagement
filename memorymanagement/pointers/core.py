@@ -596,11 +596,11 @@ class Pointer(Generic[PT]):
 <table>
     <thead>
         <tr>
-            <th style=\"text-align: center;\">{self.reference}</th>
+            <th style="text-align: center;">{self.reference}</th>
         </tr>
     </thead>
     <tr>
-        <td style=\"text-align: center;\">{self.value}</td>
+        <td style="text-align: center;">{self.value}</td>
     </tr>
 </table>\
 """
