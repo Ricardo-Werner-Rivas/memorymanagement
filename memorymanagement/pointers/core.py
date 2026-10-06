@@ -421,52 +421,31 @@ class Pointer(Generic[PT]):
     #* ARITHMETIC OPERATIONS
     # Addition
     def __add__(self,value):
-        if isinstance(value,Pointer):
-            return self.value+value.value
-        else:
-            return self.value+value
+        return self.value+value
     
     # Difference
     def __sub__(self,value):
-        if isinstance(value,Pointer):
-            return self.value-value.value
-        else:
-            return self.value-value
+        return self.value-value
     
     # Multiplication
     def __mul__(self,value):
-        if isinstance(value,Pointer):
-            return self.value*value.value
-        else:
-            return self.value*value
+        return self.value*value
     
     # Fraction
     def __truediv__(self,value):
-        if isinstance(value,Pointer):
-            return self.value/value.value
-        else:
-            return self.value/value
+        return self.value/value
     
     # Integer division
     def __floordiv__(self,value):
-        if isinstance(value,Pointer):
-            return self.value//value.value
-        else:
-            return self.value//value
+        return self.value//value
     
     # Module
     def __mod__(self,value):
-        if isinstance(value,Pointer):
-            return self.value%value.value
-        else:
-            return self.value%value
+        return self.value%value
     
     # Power
     def __pow__(self,value):
-        if isinstance(value,Pointer):
-            return self.value**value.value
-        else:
-            return self.value**value
+        return self.value**value
     
     #* REFLEXED ARITHMETIC METHODS
     # Addition
