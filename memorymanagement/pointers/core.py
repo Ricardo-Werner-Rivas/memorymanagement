@@ -421,52 +421,31 @@ class Pointer(Generic[PT]):
     #* ARITHMETIC OPERATIONS
     # Addition
     def __add__(self,value):
-        if isinstance(value,Pointer):
-            return self.value+value.value
-        else:
-            return self.value+value
+        return self.value+value
     
     # Difference
     def __sub__(self,value):
-        if isinstance(value,Pointer):
-            return self.value-value.value
-        else:
-            return self.value-value
+        return self.value-value
     
     # Multiplication
     def __mul__(self,value):
-        if isinstance(value,Pointer):
-            return self.value*value.value
-        else:
-            return self.value*value
+        return self.value*value
     
     # Fraction
     def __truediv__(self,value):
-        if isinstance(value,Pointer):
-            return self.value/value.value
-        else:
-            return self.value/value
+        return self.value/value
     
     # Integer division
     def __floordiv__(self,value):
-        if isinstance(value,Pointer):
-            return self.value//value.value
-        else:
-            return self.value//value
+        return self.value//value
     
     # Module
     def __mod__(self,value):
-        if isinstance(value,Pointer):
-            return self.value%value.value
-        else:
-            return self.value%value
+        return self.value%value
     
     # Power
     def __pow__(self,value):
-        if isinstance(value,Pointer):
-            return self.value**value.value
-        else:
-            return self.value**value
+        return self.value**value
     
     #* REFLEXED ARITHMETIC METHODS
     # Addition
@@ -578,15 +557,15 @@ class Pointer(Generic[PT]):
     #* UNARY METHODS
     # Negative
     def __neg__(self):
-        return Pointer(-self.value)
+        return -self.value
     
     # Positive
     def __pos__(self):
-        return Pointer(+self.value)
+        return +self.value
     
     # Absolute value
     def __abs__(self):
-        return Pointer(abs(self.value))
+        return abs(self.value)
     
     #* LENGTH
     # Length
@@ -617,11 +596,11 @@ class Pointer(Generic[PT]):
 <table>
     <thead>
         <tr>
-            <th style=\"text-align: center;\">{self.reference}</th>
+            <th style="text-align: center;">{self.reference}</th>
         </tr>
     </thead>
     <tr>
-        <td style=\"text-align: center;\">{self.value}</td>
+        <td style="text-align: center;">{self.value}</td>
     </tr>
 </table>\
 """
