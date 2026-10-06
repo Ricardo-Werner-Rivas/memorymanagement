@@ -557,15 +557,15 @@ class Pointer(Generic[PT]):
     #* UNARY METHODS
     # Negative
     def __neg__(self):
-        return Pointer(-self.value)
+        return -self.value
     
     # Positive
     def __pos__(self):
-        return Pointer(+self.value)
+        return +self.value
     
     # Absolute value
     def __abs__(self):
-        return Pointer(abs(self.value))
+        return abs(self.value)
     
     #* LENGTH
     # Length
