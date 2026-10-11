@@ -90,16 +90,23 @@ class Pointer(Generic[PT]):
         Arguments
         ---------
         value : `Any`|`None`, Optional
-            Object to point to. If want to point to a class instance's atribute, pass to this argument the class instance without the atribute.
+            Object to point to.
+            If you want to point to an attribute, pass to this argument the class or instance without the attribute.
+            If no reference is given, the pointer targets all the value's references.
+            Note that the pointer points to the references of the object that shares the given value's identity, not content.
         reference : `str`|`None`, Optional
-            Name linked to the value to point to. Useful in case there are multiple references pointing to the same value.
+            Name linked to the value to point to.
+            Useful in case there are multiple references pointing to the same object.
+            Reference must be linked to the given value's identity.
+            If no reference is given, all value's references will be targeted.
+            If no value is given, the reference will be used to locate the target object.
         attr : `str`|`None`, Optional
             Name of the class or instance attribute to which the pointer will point to.
             Leave empty if the objective is to point to the instance itself instead of a single attribute.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
-        self._vars_dict=vars_dict=currentframe().f_back.f_locals # Variables' frame
+        self._vars_dict=vars_dict=currentframe().f_back.f_locals # Variables' dictionary
         
         # If no value or reference is given
         if not value and not reference:
@@ -107,6 +114,15 @@ class Pointer(Generic[PT]):
             raise ValueError("Either a value or a reference is needed")
         # Else, if a reference is given
         elif value and reference:
+            #// if not isinstance(reference,str):
+            #//     reference=set(reference)
+            #//     if any(ref not in vars_dict for ref in reference):
+            #//         raise NameError
+            #//     elif any(vars_dict[ref] is not value for ref in reference):
+            #//         raise ValueError
+            #//     else:
+            #//         name=tuple(reference)
+            #// elif reference in vars_dict and vars_dict[reference] is value:
             # If the reference is in the variables' frame and points to the given value
             if reference in vars_dict and vars_dict[reference] is value:
                 # Store the reference in "name" local variable
@@ -121,6 +137,15 @@ class Pointer(Generic[PT]):
                 raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
         # Else, if only a reference is given
         elif reference:
+            #// if not isinstance(reference,str):
+            #//     reference=set(reference)
+            #//     if any(ref not in vars_dict for ref in reference):
+            #//         raise NameError
+            #//     elif len(set(id(vars_dict[ref]) for ref in reference))>1:
+            #//         raise ValueError
+            #//     else:
+            #//         name=tuple(reference)
+            #// elif reference in vars_dict:
             # If the given reference is in the variables' frame
             if reference in vars_dict:
                 # Store the reference into local variable "name"
@@ -133,16 +158,10 @@ class Pointer(Generic[PT]):
                 raise NameError(f"Name \"{reference}\" is not defined")
         # Else (only value)
         else:
-            # If the given value is between the variables' frame values
+            # If the given value is between the variables' dictionary's values
             if value in vars_dict.values():
-                # Loop for the variables' frame
-                for key,v in vars_dict.items():
-                    # If the current value is the given value
-                    if v is value:
-                        # The current key is the reference
-                        name=key
-                        # Break loop
-                        break
+                # Get every reference to the given value
+                name=tuple(key for key,v in vars_dict.items() if v is value)
             # Else
             else:
                 # Raise a "NameError"
@@ -153,22 +172,99 @@ class Pointer(Generic[PT]):
         # Store the reference in the hidden attribute "_name"
         self._name=name
         
-        # If there is an instance's attribute to point to but it doesn't belong to the given value
+        # If there is a class' or instance's attribute to point to but it doesn't belong to the given value
         if attr and attr not in dir(value):
             # Raise an "AttributeError"
             raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
     
+    #// def __init__(self,value=None,reference:str|None=None,*,attr:str|None=None):
+    #//     """
+    #//     Arguments
+    #//     ---------
+    #//     value : `Any`|`None`, Optional
+    #//         Object to point to. If want to point to a class instance's attribute, pass to this argument the class instance without the attribute.
+    #//     reference : `str`|`None`, Optional
+    #//         Name linked to the value to point to. Useful in case there are multiple references pointing to the same value.
+    #//     attr : `str`|`None`, Optional
+    #//         Name of the class or instance attribute to which the pointer will point to.
+    #//         Leave empty if the objective is to point to the instance itself instead of a single attribute.
+    #//     """
+    #//     # Store hidden attributes "_attr" and "_vars_dict"
+    #//     self._attr=attr # Instance attribute to point to
+    #//     self._vars_dict=vars_dict=currentframe().f_back.f_locals # Variables' frame
+        
+    #//     # If no value or reference is given
+    #//     if not value and not reference:
+    #//         # Raise a "ValueError"
+    #//         raise ValueError("Either a value or a reference is needed")
+    #//     # Else, if a reference is given
+    #//     elif value and reference:
+    #//         # If the reference is in the variables' frame and points to the given value
+    #//         if reference in vars_dict and vars_dict[reference] is value:
+    #//             # Store the reference in "name" local variable
+    #//             name=reference
+    #//         # Else, if the reference isn't in the variables' frame
+    #//         elif reference not in vars_dict:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"Name \"{reference}\" is not defined")
+    #//         # Else, if the reference doesn't point to the given value
+    #//         elif vars_dict[reference] is not value:
+    #//             # Raise a "ValueError"
+    #//             raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
+    #//     # Else, if only a reference is given
+    #//     elif reference:
+    #//         # If the given reference is in the variables' frame
+    #//         if reference in vars_dict:
+    #//             # Store the reference into local variable "name"
+    #//             name=reference
+    #//             # Store the value the reference is pointing to in argument "value"
+    #//             value=vars_dict[reference]
+    #//         # Else
+    #//         else:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"Name \"{reference}\" is not defined")
+    #//     # Else (only value)
+    #//     else:
+    #//         # If the given value is between the variables' frame values
+    #//         if value in vars_dict.values():
+    #//             # Loop for the variables' frame
+    #//             for key,v in vars_dict.items():
+    #//                 # If the current value is the given value
+    #//                 if v is value:
+    #//                     # The current key is the reference
+    #//                     name=key
+    #//                     # Break loop
+    #//                     break
+    #//         # Else
+    #//         else:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
+            
+    #//     # Set argument "value" as the pointer's value
+    #//     self._value=value
+    #//     # Store the reference in the hidden attribute "_name"
+    #//     self._name=name
+        
+    #//     # If there is an instance's attribute to point to but it doesn't belong to the given value
+    #//     if attr and attr not in dir(value):
+    #//         # Raise an "AttributeError"
+    #//         raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
+    
     # Point to another object
     def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
-        Changes the address which the `Pointer` object points to.
+        Reuses the Pointer object and makes it to point to a new object.
         
         Arguments
         ---------
         value : `Any`|`None`, Optional
-            Value to point to. If wanted class attribute, introduce just the class object.
+            Value to point to.
+            If wanted to point to an attribute, introduce just the class or instance without the attribute.
         reference : `str`|`None`, Optional
-            Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
+            Reference pointing to the desired value.
+            Reference must be linked to the given value's identity.
+            If no reference is given, all value's references will be targeted.
+            If no value is given, the reference will be used to locate the target object.
         attr : `str`|`None`, Optional
             Name of the class or instance attribute from the targeted object for the pointer to point to.
             Leave empty if pointing to the object is desired instead of a single attribute.
@@ -191,6 +287,15 @@ class Pointer(Generic[PT]):
                 raise ValueError("No argument was given")
         # Else, if both reference and value are given
         elif reference and value:
+            #// if not isinstance(reference,str):
+            #//     reference=set(reference)
+            #//     if any(ref not in self._vars_dict for ref in reference):
+            #//         raise NameError
+            #//     elif any(self._vars_dict[ref] is not value for ref in reference):
+            #//         raise ValueError
+            #//     else:
+            #//         self._name,self._value=tuple(reference),value
+            #// elif reference in self._vars_dict and self._vars_dict[reference] is value:
             # If the reference is in the variables' frame and it points to the given value
             if reference in self._vars_dict and self._vars_dict[reference] is value:
                 # Store both into their corresponding hidden attributes
@@ -215,6 +320,15 @@ class Pointer(Generic[PT]):
                 raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
         # Else, if only a reference is given
         elif reference:
+            #// if not isinstance(reference,str):
+            #//     reference=set(reference)
+            #//     if any(ref not in self._vars_dict for ref in reference):
+            #//         raise NameError
+            #//     elif len(set(id(self._vars_dict[ref]) for ref in reference))>1:
+            #//         raise ValueError
+            #//     else:
+            #//         self._name,self._value=tuple(reference),self._vars_dict[reference[0]]
+            #// elif reference in self._vars_dict:
             # If the reference is in the variables' frame
             if reference in self._vars_dict:
                 # Store the reference and the value it is pointing to into their corresponding hidden attributes
@@ -236,15 +350,9 @@ class Pointer(Generic[PT]):
         # Else (only value)
         else:
             # If the given value is between the variables' frame's values
-            if value in self._vars_dict:
+            if value in self._vars_dict.values():
                 # Loop for the variables' frame
-                for key,v in self._vars_dict.items():
-                    # If the current value is the given value
-                    if v is value:
-                        # The current key is the reference and the given value is set as pointer's value
-                        self._name,self._value=key,value
-                        # Break
-                        break
+                self._name,self._value=tuple(key for key,v in self._vars_dict.items() if v is value),value
                 # If an instance's attribute name is given
                 if attr:
                     # If the attribute belongs to the new value
@@ -260,6 +368,107 @@ class Pointer(Generic[PT]):
                 # Raise a "NameError"
                 raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
     
+    #// def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
+    #//     """
+    #//     Changes the address which the `Pointer` object points to.
+    #//
+    #//     Arguments
+    #//     ---------
+    #//     value : `Any`|`None`, Optional
+    #//         Value to point to. If wanted class attribute, introduce just the class object.
+    #//     reference : `str`|`None`, Optional
+    #//         Reference pointing to the desired value. If wanted class attribute, introduce the reference for the class instance.
+    #//     attr : `str`|`None`, Optional
+    #//         Name of the class or instance attribute from the targeted object for the pointer to point to.
+    #//         Leave empty if pointing to the object is desired instead of a single attribute.
+    #//     """
+    #//     # If no reference or value is given
+    #//     if not value and not reference:
+    #//         # If an instance's attribute name is given
+    #//         if attr:
+    #//             # If the attribute belongs to the pointer's value
+    #//             if attr in dir(self._value):
+    #//                 # Store the attribute name into its corresponding hidden attribute
+    #//                 self._attr=attr
+    #//             # Else
+    #//             else:
+    #//                 # Raise an "AttributeError"
+    #//                 raise AttributeError(f"\"{attr}\" isn't an attribute of the name \"{self._name}\" with value {self._value} ({self._value.__class__.__name__})")
+    #//         # Else
+    #//         else:
+    #//             # Raise a "ValueError"
+    #//             raise ValueError("No argument was given")
+    #//     # Else, if both reference and value are given
+    #//     elif reference and value:
+    #//         # If the reference is in the variables' frame and it points to the given value
+    #//         if reference in self._vars_dict and self._vars_dict[reference] is value:
+    #//             # Store both into their corresponding hidden attributes
+    #//             self._name,self._value=reference,value
+    #//             # If an attribute name is given
+    #//             if attr:
+    #//                 # If the attribute belongs to the given value
+    #//                 if attr in dir(self._value):
+    #//                     # Store attribute name into its corresponding hidden attribute
+    #//                     self._attr=attr
+    #//                 # Else
+    #//                 else:
+    #//                     # Raise an "AttributeError"
+    #//                     raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
+    #//         # Else, if the reference isn't in the variables' frame
+    #//         elif reference not in self._vars_dict:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"Name \"{reference}\" is not defined")
+    #//         # Else, if the reference doesn't point to the given value
+    #//         elif self._vars_dict[reference] is not value:
+    #//             # Raise a "ValueError"
+    #//             raise ValueError(f"Name \"{reference}\" doesn't point to given value {value} ({value.__class__.__name__})")
+    #//     # Else, if only a reference is given
+    #//     elif reference:
+    #//         # If the reference is in the variables' frame
+    #//         if reference in self._vars_dict:
+    #//             # Store the reference and the value it is pointing to into their corresponding hidden attributes
+    #//             self._name,self._value=reference,self._vars_dict[reference]
+    #//             # If an instance's attribute name is given
+    #//             if attr:
+    #//                 # If the attribute belongs to the new value
+    #//                 if attr in dir(self._value):
+    #//                     # Store the attribute name into its corresponding hidden attribute
+    #//                     self._attr=attr
+    #//                 # Else
+    #//                 else:
+    #//                     # Raise an "AttributeError"
+    #//                     raise AttributeError(f"\"{attr}\" is not an attribute of {value} ({value.__class__.__name__})")
+    #//         # Else
+    #//         else:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"Name \"{reference}\" is not defined")
+    #//     # Else (only value)
+    #//     else:
+    #//         # If the given value is between the variables' frame's values
+    #//         if value in self._vars_dict:
+    #//             # Loop for the variables' frame
+    #//             for key,v in self._vars_dict.items():
+    #//                 # If the current value is the given value
+    #//                 if v is value:
+    #//                     # The current key is the reference and the given value is set as pointer's value
+    #//                     self._name,self._value=key,value
+    #//                     # Break
+    #//                     break
+    #//             # If an instance's attribute name is given
+    #//             if attr:
+    #//                 # If the attribute belongs to the new value
+    #//                 if attr in dir(self._value):
+    #//                     # Store the attribute name into its corresponding hidden attribute
+    #//                     self._attr=attr
+    #//                 # Else
+    #//                 else:
+    #//                     # Raise an "AttributeError"
+    #//                     raise AttributeError(f"\"{attr}\" is not an attribute of {self._value.__class__.__name__} {self._value}")
+    #//         # Else
+    #//         else:
+    #//             # Raise a "NameError"
+    #//             raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
+    
     # Get references
     def get_refs(self)->tuple[str]:
         """
@@ -274,25 +483,59 @@ class Pointer(Generic[PT]):
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
     
     # Switch reference
-    def switch_ref(self,reference:str):
+    def switch_ref(self,reference:str|None=None):
         """
-        Allows to switch between references pointing to the same current value of the `Pointer` object.
+        Switches between references pointing to the same current value of the `Pointer` object.
         
         Arguments
         ---------
-        reference : `str`
+        reference : `str`|`None`, Optional
             Reference, pointing to the current pointer's value, to switch the pointer to.
+            If empty, the `Pointer` object targets every reference pointing to its current value,
+            as if it were actually pointing to the value's memory address.
         """
-        # If the given reference is in the variables' frame but it doesn' point to current the pointer's value
-        if reference in self._vars_dict and self._vars_dict[reference] is not self.value:
+        # If no reference is given
+        if not reference:
+            # Get every reference pointing to the pointer's value
+            self._name=self.get_refs()
+        #// elif not isinstance(reference,str):
+        #//     reference=set(reference)
+        #//     if any(ref not in self._vars_dict for ref in reference):
+        #//         raise NameError
+        #//     elif any(self._vars_dict[ref] is not self.value for ref in reference):
+        #//         raise ValueError
+        #//     else:
+        #//         reference=tuple(reference)
+        # If the given reference is in the variables' frame but it doesn't point to current the pointer's value
+        elif reference in self._vars_dict and self._vars_dict[reference] is not self.value:
             # Raise a "ValueError"
-            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self._value} ({self._value.__class__.__name__})")
+            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self.value} ({self.value.__class__.__name__})")
         # Else, if the given reference is not in the variables' frame
         elif reference not in self._vars_dict:
             # Raise a "NameError"
             raise NameError(f"Name \"{reference}\" is not defined")
         # Store the reference into its corresponding hidden attribute
         self._name=reference
+    
+    #// def switch_ref(self,reference:str):
+    #//     """
+    #//     Allows to switch between references pointing to the same current value of the `Pointer` object.
+        
+    #//     Arguments
+    #//     ---------
+    #//     reference : `str`
+    #//         Reference, pointing to the current pointer's value, to switch the pointer to.
+    #//     """
+    #//     # If the given reference is in the variables' frame but it doesn' point to current the pointer's value
+    #//     if reference in self._vars_dict and self._vars_dict[reference] is not self.value:
+    #//         # Raise a "ValueError"
+    #//         raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self._value} ({self._value.__class__.__name__})")
+    #//     # Else, if the given reference is not in the variables' frame
+    #//     elif reference not in self._vars_dict:
+    #//         # Raise a "NameError"
+    #//         raise NameError(f"Name \"{reference}\" is not defined")
+    #//     # Store the reference into its corresponding hidden attribute
+    #//     self._name=reference
     
     #* PROPERTIES
     # Value
@@ -319,47 +562,179 @@ class Pointer(Generic[PT]):
         """
         # If an instance's attribute name is stored
         if self.attr:
+            #// if not isinstance(self.reference,str):
+            #//     erased=tuple(ref not in self._vars_dict for ref in self.reference)
+            #//     if all(erased):
+            #//         del self._value,self._attr
+            #//         raise NameError
+            #//     elif any(erased):
+            #//         self._name=tuple(ref for ref in self.reference if ref in self._vars_dict)
+            #//     del erased
+            #//     num_new_values=len(set(self._vars_dict[ref] for ref in self.reference if self._vars_dict[ref] is not self._value))
+            #//     if num_new_values>1:
+            #//         raise Exception
+            #//     elif num_new_values==1:
+            #//         self._value=num_new_values[0]
+            #//         for ref in self.reference:
+            #//             self._vars_dict[ref]=self._value
+            #// elif self.reference not in self._vars_dict:
+            # If a tuple is stored
+            if isinstance(self.reference,tuple):
+                # Get all references pointing to the current value
+                self._name=self.get_refs()
+                # If no reference was found
+                if len(self.reference)==0:
+                    # Delete the current value and the attribute's name
+                    del self._value,self._attr
+                    # Raise a "NameError"
+                    raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
             # If the stored reference is not in the variables' frame
-            if self.reference not in self._vars_dict:
+            elif self.reference not in self._vars_dict:
                 # Delete the pointer's value and the stored attribute name
-                del self._value,self.attr
+                del self._value,self._attr
                 # Raise a "NameError"
                 raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
+            elif self._vars_dict[self.reference] is not self._value:
+                self._value=self._vars_dict[self.reference]
+                if self.attr not in dir(self._value):
+                    raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
             # Else, if the stored attribute name doesn't belong to the pointer's value
             elif self.attr not in dir(self._value):
                 # Raise an "AttributeError"
-                raise AttributeError(f"The atribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
+                raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
             # Return the instance attribute's value
             return getattr(self._value,self.attr)
         # Else
         else:
+            #// if not isinstance(self.reference,str):
+            #//     erased=tuple(ref not in self._vars_dict for ref in self.reference)
+            #//     if all(erased):
+            #//         del self._value
+            #//         raise NameError
+            #//     elif any(erased):
+            #//         self._name=tuple(ref for ref in self.reference if ref in self._vars_dict)
+            #//     del erased
+            #//     num_new_values=len(set(self._vars_dict[ref] for ref in self.reference if self._vars_dict[ref] is not self._value))
+            #//     if num_new_values>1:
+            #//         raise Exception
+            #//     elif num_new_values==1:
+            #//         self._value=num_new_values[0]
+            #//         for ref in self.reference:
+            #//             self._vars_dict[ref]=self._value
+            #// elif self.reference not in self._vars_dict:
+            # If a tuple is stored
+            if isinstance(self.reference,tuple):
+                # Get all references pointing to the current value
+                self._name=self.get_refs()
+                # If no reference was found
+                if len(self.reference)==0:
+                    # Delete current pointer's value
+                    del self._value
+                    # Raise a "NameError"
+                    raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
             # If the stored reference is not in the variables' frame
-            if self.reference not in self._vars_dict:
+            elif self.reference not in self._vars_dict:
                 # Delete the pointer's hidden attribute "_value"
                 del self._value
                 # Raise a "NameError"
                 raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
             # If the original value differs from the stored one (because it was changed)
-            if self._value is not self._vars_dict[self.reference]:
+            elif self._value is not self._vars_dict[self.reference]:
                 # Update the pointer's value
                 self._value=self._vars_dict[self.reference]
             # Return the pointer's value
             return self._value
+    #// def value(self):
+    #//     """
+    #//     Gets, sets or deletes the pointer's value.
+    #//     It also affects the original object if needed.
+    #//     If an attribute name was originally given, the attribute value is affected instead of the given instance.
+        
+    #//     Arguments
+    #//     ---------
+    #//     value : `Any`|`None`
+    #//         **Only for setter**.
+    #//         New value to set the pointer to.
+        
+    #//     Returns
+    #//     -------
+    #//     Any
+    #//         **Only for getter**.
+    #//         Object or attribute value the pointer is pointing to.
+    #//         It is returned as-is, instead of a copy, so it can be manipulated thorugh its own methods.
+    #//     """
+    #//     # If an instance's attribute name is stored
+    #//     if self.attr:
+    #//         # If the stored reference is not in the variables' frame
+    #//         if self.reference not in self._vars_dict:
+    #//             # Delete the pointer's value and the stored attribute name
+    #//             del self._value,self.attr
+    #//             # Raise a "NameError"
+    #//             raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
+    #//         # Else, if the stored attribute name doesn't belong to the pointer's value
+    #//         elif self.attr not in dir(self._value):
+    #//             # Raise an "AttributeError"
+    #//             raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
+    #//         # Return the instance attribute's value
+    #//         return getattr(self._value,self.attr)
+    #//     # Else
+    #//     else:
+    #//         # If the stored reference is not in the variables' frame
+    #//         if self.reference not in self._vars_dict:
+    #//             # Delete the pointer's hidden attribute "_value"
+    #//             del self._value
+    #//             # Raise a "NameError"
+    #//             raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
+    #//         # If the original value differs from the stored one (because it was changed)
+    #//         if self._value is not self._vars_dict[self.reference]:
+    #//             # Update the pointer's value
+    #//             self._value=self._vars_dict[self.reference]
+    #//         # Return the pointer's value
+    #//         return self._value
     # Setter
     @value.setter
     def value(self,value):
         # If an attribute name is stored
         if self.attr:
-            # Set the instance' attribute to the new value
+            # Set the instance's attribute to the new value
             setattr(self._value,self.attr,value)
         # Else
         else:
-            # Set the pointers value to the new value
-            self._value=value
-            # If the new pointer's value differs from the original variable
-            if value is not self._vars_dict[self.reference]:
+            # If a tuple is stored
+            if isinstance(self.reference,tuple):
+                # Get all references pointing to the current value
+                self._name=self.get_refs()
+                # If no reference was found
+                if len(self.reference)==0:
+                    # Delete current pointer's value
+                    del self._value
+                    # Raise a "NameError"
+                    raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
+                # Else
+                else:
+                    # Loop for references
+                    for ref in self.reference:
+                        # Set all the targeted references to the new value
+                        self._vars_dict[ref]=value
+            # Else, if the new pointer's value differs from the original variable
+            elif value is not self._vars_dict[self.reference]:
                 # Update the original variable setting it to the new value
                 self._vars_dict[self.reference]=value
+            # Set the pointer's value to the new value
+            self._value=value
+    #// def value(self,value):
+    #//     # If an attribute name is stored
+    #//     if self.attr:
+    #//         # Set the instance' attribute to the new value
+    #//         setattr(self._value,self.attr,value)
+    #//     # Else
+    #//     else:
+    #//         # Set the pointer's value to the new value
+    #//         self._value=value
+    #//         # If the new pointer's value differs from the original variable
+    #//         if value is not self._vars_dict[self.reference]:
+    #//             # Update the original variable setting it to the new value
+    #//             self._vars_dict[self.reference]=value
     # Deleter
     @value.deleter
     def value(self):
@@ -371,8 +746,18 @@ class Pointer(Generic[PT]):
         else:
             # Delete the "_value" pointer's hidden attribute
             del self._value
-            # Delete the corresponding variable
-            del self._vars_dict[self.reference]
+            # If a tuple is stored
+            if isinstance(self.reference,tuple):
+                # Get all references pointing to the current value
+                self._name=self.get_refs()
+                # Loop for references
+                for ref in self.reference:
+                    # Delete current reference from the variables' dictionary
+                    del self._vars_dict[ref]
+            # Else
+            else:
+                # Delete the corresponding variable
+                del self._vars_dict[self.reference]
     
     # Reference
     @property
@@ -386,7 +771,9 @@ class Pointer(Generic[PT]):
         str
             Reference pointing to the `Pointer` instance.
         """
-        # Return the stored reference
+        # Execute "value" property's getter for references' validation
+        self.value
+        # Return the stored reference(s)
         return self._name
     #^ No setter
     #^ No deleter
