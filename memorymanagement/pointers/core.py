@@ -79,8 +79,9 @@ class Pointer(Generic[PT]):
     ## Currently supported
     Both global and local variables can be pointed at.
     
-    Literals are **not** supported because of it being useless. Literals do **not** work anymore.
-    The only use for introducing a literal instead of a referenced value is for the class code to display all the references pointing to the given literal,
+    Literals are **not** supported because of it being useless, and they using them won't work.
+    The only use for introducing a literal instead of a referenced value would be
+    for the class code to display all the references pointing to the given literal,
     through the `get_refs` method, if there is more than one.
     """
     #* METHODS
@@ -498,6 +499,15 @@ class Pointer(Generic[PT]):
         if not reference:
             # Get every reference pointing to the pointer's value
             self._name=self.get_refs()
+            if len(self.reference)==0:
+                # Delete the pointer's current value
+                del self._value
+                # If an attribute name was given
+                if self._attr:
+                    # Delete it
+                    del self._attr
+                # Raise a "NameError"
+                raise NameError("The object has already been deleted, so the pointer no longer has access to it.")
         #// elif not isinstance(reference,str):
         #//     reference=set(reference)
         #//     if any(ref not in self._vars_dict for ref in reference):
@@ -544,8 +554,10 @@ class Pointer(Generic[PT]):
     def value(self):
         """
         Gets, sets or deletes the pointer's value.
-        It also affects the original object if needed.
+        It also affects the original object(s) if needed.
         If an attribute name was originally given, the attribute value is affected instead of the given instance.
+        
+        If pointing to all references, they get updated.
         
         Arguments
         ---------
@@ -762,13 +774,13 @@ class Pointer(Generic[PT]):
     # Reference
     @property
     # Getter
-    def reference(self)->str:
+    def reference(self)->str|tuple:
         """
-        Gets the self reference of the pointer.
+        Gets the reference or references the pointer is pointing to.
         
         Returns
         -------
-        str
+        str|tuple
             Reference pointing to the `Pointer` instance.
         """
         # Execute "value" property's getter for references' validation
@@ -782,7 +794,7 @@ class Pointer(Generic[PT]):
     @property
     def attr(self)->str|None:
         """
-        Gets the name of the attribute the pointer is pointing to.
+        Gets the name of the attribute the pointer is pointing to, if it was given.
         
         Returns
         -------
@@ -975,7 +987,7 @@ class Pointer(Generic[PT]):
     #* SCREEN
     # Representation
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.value},{self.reference},attr={self.attr})"
+        return f"{self.__class__.__name__}({self.value},{self.reference if isinstance(self.reference,str) else None},attr={self.attr})"
     
     # HTML representation
     def _repr_html_(self):
