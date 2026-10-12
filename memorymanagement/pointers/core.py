@@ -497,8 +497,10 @@ class Pointer(Generic[PT]):
         """
         # If no reference is given
         if not reference:
+            # Get all references pointing to the current value
+            self._name=self.get_refs()
             # If no reference was found
-            if len(self.reference)==0:
+            if len(self._name)==0:
                 # Delete the pointer's current value
                 del self._value
                 # If an attribute name was given
@@ -591,14 +593,8 @@ class Pointer(Generic[PT]):
             #// elif self.reference not in self._vars_dict:
             # If a tuple is stored
             if isinstance(self.reference,tuple):
-                # Get all references pointing to the current value
-                self._name=self.get_refs()
-                # If no reference was found
-                if len(self.reference)==0:
-                    # Delete the current value and the attribute's name
-                    del self._value,self._attr
-                    # Raise a "NameError"
-                    raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
+                # Pass
+                pass
             # If the stored reference is not in the variables' frame
             elif self.reference not in self._vars_dict:
                 # Delete the pointer's value and the stored attribute name
@@ -609,8 +605,9 @@ class Pointer(Generic[PT]):
                 self._value=self._vars_dict[self.reference]
                 if self.attr not in dir(self._value):
                     raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
-            # Else, if the stored attribute name doesn't belong to the pointer's value
-            elif self.attr not in dir(self._value):
+            
+            # If the stored attribute name doesn't belong to the pointer's value
+            if self.attr not in dir(self._value):
                 # Raise an "AttributeError"
                 raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
             # Return the instance attribute's value
@@ -635,14 +632,8 @@ class Pointer(Generic[PT]):
             #// elif self.reference not in self._vars_dict:
             # If a tuple is stored
             if isinstance(self.reference,tuple):
-                # Get all references pointing to the current value
-                self._name=self.get_refs()
-                # If no reference was found
-                if len(self.reference)==0:
-                    # Delete current pointer's value
-                    del self._value
-                    # Raise a "NameError"
-                    raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
+                # Pass
+                pass
             # If the stored reference is not in the variables' frame
             elif self.reference not in self._vars_dict:
                 # Delete the pointer's hidden attribute "_value"
@@ -780,8 +771,12 @@ class Pointer(Generic[PT]):
             if len(self._name)==0:
                 # Delete the pointer's value
                 del self._value
+                # If an attribute name was given
+                if self.attr:
+                    # Delete "_attr" hidden attribute
+                    del self._attr
                 # Raise a "NameError"
-                raise NameError("The targeted object has already been deleted, so the pointer no longer has access to it.")
+                raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
         # Return the stored reference(s)
         return self._name
     #^ No setter
