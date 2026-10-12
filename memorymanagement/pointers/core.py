@@ -783,8 +783,16 @@ class Pointer(Generic[PT]):
         str|tuple
             Reference pointing to the `Pointer` instance.
         """
-        # Execute "value" property's getter for references' validation
-        self.value
+        # If a tuple is stored
+        if isinstance(self._name,tuple):
+            # Get all the references
+            self._name=self.get_refs()
+            # If no reference was found
+            if len(self._name)==0:
+                # Delete the pointer's value
+                del self._value
+                # Raise a "NameError"
+                raise NameError("The object has already been deleted, so the pointer no longer has access to it.")
         # Return the stored reference(s)
         return self._name
     #^ No setter
