@@ -497,8 +497,7 @@ class Pointer(Generic[PT]):
         """
         # If no reference is given
         if not reference:
-            # Get every reference pointing to the pointer's value
-            self._name=self.get_refs()
+            # If no reference was found
             if len(self.reference)==0:
                 # Delete the pointer's current value
                 del self._value
@@ -525,7 +524,7 @@ class Pointer(Generic[PT]):
             # Raise a "NameError"
             raise NameError(f"Name \"{reference}\" is not defined")
         # Store the reference into its corresponding hidden attribute
-        self._name=reference
+        self._name=reference if reference else self._name
     
     #// def switch_ref(self,reference:str):
     #//     """
@@ -714,20 +713,10 @@ class Pointer(Generic[PT]):
         else:
             # If a tuple is stored
             if isinstance(self.reference,tuple):
-                # Get all references pointing to the current value
-                self._name=self.get_refs()
-                # If no reference was found
-                if len(self.reference)==0:
-                    # Delete current pointer's value
-                    del self._value
-                    # Raise a "NameError"
-                    raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
-                # Else
-                else:
-                    # Loop for references
-                    for ref in self.reference:
-                        # Set all the targeted references to the new value
-                        self._vars_dict[ref]=value
+                # Loop for references
+                for ref in self.reference:
+                    # Set all the targeted references to the new value
+                    self._vars_dict[ref]=value
             # Else, if the new pointer's value differs from the original variable
             elif value is not self._vars_dict[self.reference]:
                 # Update the original variable setting it to the new value
@@ -792,7 +781,7 @@ class Pointer(Generic[PT]):
                 # Delete the pointer's value
                 del self._value
                 # Raise a "NameError"
-                raise NameError("The object has already been deleted, so the pointer no longer has access to it.")
+                raise NameError("The targeted object has already been deleted, so the pointer no longer has access to it.")
         # Return the stored reference(s)
         return self._name
     #^ No setter
