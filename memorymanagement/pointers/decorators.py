@@ -40,10 +40,10 @@ def pointerize(func:function):
     Returns
     -------
     _Wrapped
-        Wrapped function able to receive pointers.
+        Wrapped function able to receive `Pointer` objects.
     """
     #* IDENTITY MANAGEMENT
-    # Makes the decorating function to keep its identity
+    # Makes the decorated function to keep its identity
     @wraps(func)
     
     #* WRAPPER
