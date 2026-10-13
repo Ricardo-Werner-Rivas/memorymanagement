@@ -247,9 +247,11 @@ class Cleaner:
         Arguments
         ---------
         flagged : `bool`, Optional
-            Wether the `flagged` list should be purged (`True`) or not (`False`). `True` by default
+            Wether the `flagged` list should be purged (`True`) or not (`False`).
+            `True` by default
         excluded : `bool`, Optional
-            Wether the `excluded` list should be purged (`True`) or not (`False`). `True` by default
+            Wether the `excluded` list should be purged (`True`) or not (`False`).
+            `True` by default
         """
         # If there is no list to be purged
         if not flagged and not excluded:
