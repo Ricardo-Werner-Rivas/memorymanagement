@@ -115,15 +115,6 @@ class Pointer(Generic[PT]):
             raise ValueError("Either a value or a reference is needed")
         # Else, if a reference is given
         elif value and reference:
-            #// if not isinstance(reference,str):
-            #//     reference=set(reference)
-            #//     if any(ref not in vars_dict for ref in reference):
-            #//         raise NameError
-            #//     elif any(vars_dict[ref] is not value for ref in reference):
-            #//         raise ValueError
-            #//     else:
-            #//         name=tuple(reference)
-            #// elif reference in vars_dict and vars_dict[reference] is value:
             # If the reference is in the variables' frame and points to the given value
             if reference in vars_dict and vars_dict[reference] is value:
                 # Store the reference in "name" local variable
