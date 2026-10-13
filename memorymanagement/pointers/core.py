@@ -163,7 +163,7 @@ class Pointer(Generic[PT]):
     # Point to another object
     def point_to(self,value=None,reference:str|None=None,*,attr:str|None=None):
         """
-        Reuses the Pointer object and makes it to point to a new object.
+        Reuses the `Pointer` object and makes it to point to a new object.
         
         Arguments
         ---------
