@@ -10,8 +10,6 @@
 #// Alternative or deprecated code
 #*===============================================================================================================================
 
-#^ The different types of comments require the "Colorful Comments Refreshed" extension for VSCode to be properly distinguished
-
 #* IMPORTS
 # modules from sys
 from inspect import currentframe
@@ -165,7 +163,7 @@ class Cleaner:
             while var in self._flagged:
                 self._flagged.remove(var)
             # Introduce variable into the "excluded" list
-            if var not in self._excluded and var not in self._not_delete:
+            if var not in self.excluded and var not in self.not_delete:
                 self._excluded.append(var)
     
     # Include
@@ -181,7 +179,7 @@ class Cleaner:
         # Loop for the variables to include
         for var in include:
             # Introduce variable into the "flagged" list
-            if var not in self._flagged and var not in self.not_delete:
+            if var not in self.flagged and var not in self.not_delete:
                 self._flagged.append(var)
             # Remove from "excluded" list
             while var in self._excluded:
@@ -247,9 +245,11 @@ class Cleaner:
         Arguments
         ---------
         flagged : `bool`, Optional
-            Wether the `flagged` list should be purged (`True`) or not (`False`). `True` by default
+            Wether the `flagged` list should be purged (`True`) or not (`False`).
+            `True` by default
         excluded : `bool`, Optional
-            Wether the `excluded` list should be purged (`True`) or not (`False`). `True` by default
+            Wether the `excluded` list should be purged (`True`) or not (`False`).
+            `True` by default
         """
         # If there is no list to be purged
         if not flagged and not excluded:
@@ -294,6 +294,8 @@ class Cleaner:
         """
         # If reference is not set or it doesn't point to the "Cleaner" object
         if not self._name or self._vars_dict[self._name] is not self:
+            # Set "_name" hidden attribute to "None"
+            self._name=None
             # Loop for variables dictionary
             for key,value in self._vars_dict.items():
                 # If current value is the "Cleaner" object

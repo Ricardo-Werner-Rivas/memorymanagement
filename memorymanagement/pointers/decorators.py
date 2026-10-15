@@ -10,8 +10,6 @@
 #// Alternative or deprecated code
 #*===============================================================================================================================
 
-#^ The different types of comments require the "Colorful Comments Refreshed" extension for VSCode to be properly distinguished
-
 #* IMPORTS
 # settrace (sys)
 from sys import settrace
@@ -40,10 +38,10 @@ def pointerize(func:function):
     Returns
     -------
     _Wrapped
-        Wrapped function able to receive pointers.
+        Wrapped function able to receive `Pointer` objects.
     """
     #* IDENTITY MANAGEMENT
-    # Makes the decorating function to keep its identity
+    # Makes the decorated function to keep its identity
     @wraps(func)
     
     #* WRAPPER

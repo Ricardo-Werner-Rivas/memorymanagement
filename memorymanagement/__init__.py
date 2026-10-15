@@ -10,9 +10,9 @@ A safe implementation of pointers for Python. Written in pure Python, this modul
 ### 1. Class `Pointer`
 Creates a `Pointer` instance. These pointers point to a reference, not to an object in memory.
 It is also able to point to every reference pointing to its value, as if it was pointing to the object's memory address.
-If value for the reference(s) is changed, so is the pointer's value and *viceversa*.
+If value for the reference(s) is changed, so is the pointer's value and *viceversa* (only if a reference is specified).
 ### 2. Decorator `pointerize`
-Allows a function to receive pointers instead of the normally expected values.
+Allows a function to receive `Pointer` objects instead of the normally expected values.
 """
 # Imports
 from .cleaning import Cleaner
