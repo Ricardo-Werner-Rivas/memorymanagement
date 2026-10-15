@@ -10,8 +10,6 @@
 #// Alternative or deprecated code
 #*===============================================================================================================================
 
-#^ The different types of comments require the "Colorful Comments Refreshed" extension for VSCode to be properly distinguished
-
 #* IMPORTS
 # modules from sys
 from inspect import currentframe
