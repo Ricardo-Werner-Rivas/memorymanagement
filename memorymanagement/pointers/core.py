@@ -79,7 +79,7 @@ class Pointer(Generic[PT]):
     
     Literals are **not** supported because of it being useless, and using them won't work.
     The only use for introducing a literal instead of a referenced value is for the class code
-    to display all the references pointing to the given literal, through the `get_refs` method,
+    to provide all the references pointing to the given literal, through the `get_refs` method,
     if there is more than one.
     """
     #* METHODS
@@ -102,6 +102,16 @@ class Pointer(Generic[PT]):
         attr : `str`|`None`, Optional
             Name of the class or instance attribute to which the pointer will point to.
             Leave empty if the objective is to point to the instance itself instead of a single attribute.
+        
+        Raises
+        ------
+        NameError
+            If the object or targeted reference exists no more.
+        ValueError
+            If the reference's value doesn't match the pointer's value.
+            Also if no argument is given.
+        AttributeError
+            If the targeted attribute doesn't belong to the targeted instance.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
@@ -176,6 +186,16 @@ class Pointer(Generic[PT]):
         attr : `str`|`None`, Optional
             Name of the class or instance attribute from the targeted object for the pointer to point to.
             Leave empty if pointing to the object is desired instead of a single attribute.
+        
+        Raises
+        ------
+        NameError
+            If the object or targeted reference exists no more.
+        ValueError
+            If the reference's value doesn't match the pointer's value.
+            Also if no argument is given.
+        AttributeError
+            If the targeted attribute doesn't belong to the targeted instance.
         """
         # If no reference or value is given
         if not value and not reference:
@@ -282,6 +302,13 @@ class Pointer(Generic[PT]):
             Reference, pointing to the current pointer's value, to switch the pointer to.
             If empty, the `Pointer` object targets every reference pointing to its current value,
             as if it were actually pointing to the value's memory address.
+        
+        Raises
+        ------
+        NameError
+            If the object or targeted reference exists no more.
+        ValueError
+            If the reference's value doesn't match the pointer's value.
         """
         # If no reference is given
         if not reference:
@@ -323,15 +350,20 @@ class Pointer(Generic[PT]):
         Arguments
         ---------
         value : `Any`|`None`
-            **Only for setter**.
             New value to set the pointer to.
         
         Returns
         -------
         Any
-            **Only for getter**.
             Object or attribute value the pointer is pointing to.
             It is returned as-is, instead of a copy, so it can be manipulated thorugh its own methods.
+        
+        Raises
+        ------
+        NameError
+            If the object or targeted reference exists no more.
+        AttributeError
+            If the targeted attribute doesn't belong to the targeted instance.
         """
         # If an instance's attribute name is stored
         if self.attr:
@@ -339,21 +371,21 @@ class Pointer(Generic[PT]):
             if isinstance(self.reference,tuple):
                 # Pass
                 pass
-            # If the stored reference is not in the variables' frame
+            # Else, if the stored reference is not in the variables' frame
             elif self.reference not in self._vars_dict:
                 # Delete the pointer's value and the stored attribute name
                 del self._value,self._attr
                 # Raise a "NameError"
-                raise NameError("The class instance has already been deleted, so the pointer no longer has access to it.")
+                raise NameError("The given instance has already been deleted, so the pointer no longer has access to it.")
+            # Else, if the reference isn't pointing to the pointer's value
             elif self._vars_dict[self.reference] is not self._value:
+                # Update pointer's value
                 self._value=self._vars_dict[self.reference]
-                if self.attr not in dir(self._value):
-                    raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
             
             # If the stored attribute name doesn't belong to the pointer's value
             if self.attr not in dir(self._value):
                 # Raise an "AttributeError"
-                raise AttributeError(f"The attribute \"{self._attr}\" has already been deleted, so the pointer no longer has access to it.")
+                raise AttributeError(f"The attribute \"{self.attr}\" has already been deleted, so the pointer no longer has access to it.")
             # Return the instance attribute's value
             return getattr(self._value,self.attr)
         # Else
@@ -430,6 +462,11 @@ class Pointer(Generic[PT]):
         -------
         str|tuple[str]
             Reference pointing to the `Pointer` instance.
+        
+        Raises
+        ------
+        NameError
+            Raised if object was already deleted or the targeted reference exists no more.
         """
         # If a tuple is stored
         if isinstance(self._name,tuple):
