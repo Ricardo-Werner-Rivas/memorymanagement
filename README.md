@@ -3,6 +3,18 @@ Provides memory management support.
 
 The only Python implementation currently supported is the one made by the **CPython** team.
 The rest remain untested.
+## Table of Contents
+* [Modules](#modules)
+    * [`cleaning`](#cleaning)
+    * [`pointers`](#pointers)
+        * [Class `Pointer`](#class-pointer)
+        * [Decorator `pointerize`](#decorator-pointerize)
+* [Installation](#installation)
+* [Usage](#usage)
+    * [Class `Cleaner`](#class-cleaner)
+    * [Class `Pointer`](#class-pointer-1)
+    * [Decorator `pointerize`](#decorator-pointerize-1)
+* [Contribution](#contribution)
 ## Modules
 ### `cleaning`
 Provides the class `Cleaner`, which allows you to flag references stored in memory to eventually erase them.
@@ -19,7 +31,7 @@ You can install the development version of the `memorymanagement` package from [
 pip install --index-url https://test.pypi.org/simple/ memorymanagement
 ```
 For TestPyPI version, `--no-deps` option is not needed because it has no dependencies.
-## How to use
+## Usage
 ### Class `Cleaner`
 ```py
 # Imports
