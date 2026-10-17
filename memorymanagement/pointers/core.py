@@ -292,7 +292,7 @@ class Pointer(Generic[PT]):
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
     
     # Select reference by index
-    def select_ref(self,index:int=0):
+    def select_ref(self,index:int=0,/,*,random:bool=False):
         """
         Selects a reference from the ones linked to the pointers value using the provided index.
         
@@ -302,15 +302,25 @@ class Pointer(Generic[PT]):
             Position index for the references' tuple.
             The reference stored in the provided position is set as the only targeted reference.
             Defaults to the first position (`0`).
+        random : `bool`, Optional
+            Whether to select a random reference from the available ones (`True`) or not (`False`).
         """
-        # Try
-        try:
-            # Switch reference
-            self.switch_ref(self.get_refs()[index])
-        # If an "IndexError" is raised
-        except IndexError:
-            # Raise it again
-            raise IndexError("Provided index is out of range")
+        # If a random reference is required
+        if random:
+            # Import the "choice" function from `random` package
+            from random import choice
+            # Switch to a random reference
+            self.switch_ref(choice(self.get_refs()))
+        # Else
+        else:
+            # Try
+            try:
+                # Switch reference
+                self.switch_ref(self.get_refs()[index])
+            # If an "IndexError" is raised
+            except IndexError:
+                # Raise it again
+                raise IndexError("Provided index is out of range")
     
     # Switch reference
     def switch_ref(self,reference:str|None=None):
