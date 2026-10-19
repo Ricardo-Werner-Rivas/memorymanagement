@@ -292,6 +292,10 @@ class Pointer(Generic[PT]):
         tuple[str]
             References pointing to current pointer's value.
         """
+        # If the stored reference is a string
+        if isinstance(self._name,str):
+            # Execute `value` property getter to update pointer's value
+            self.value
         # Find and return all the references pointing to the pointer's value
         return tuple(key for key,v in self._vars_dict.items() if v is self._value)
     
