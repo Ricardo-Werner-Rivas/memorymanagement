@@ -25,13 +25,13 @@ class Pointer(Generic[PT]):
     Implements pointers in Python for both mutable (though unneded) and non-mutable objects.
     These pointers are completely safe and do not work internally as C's pointers, they are just an imitation of their behaviour.
     
-    When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory adress.
+    When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory address.
     This way, all references pointing to the same non-mutable object don't change when the pointer is updated, avoiding a potential mess.
     
-    Non-mutable objects still change their memory adresses when re-referenced,
-    but the reference and the value stored in the pointer are forced to share memory adress.
+    Non-mutable objects still change their memory addresses when re-referenced,
+    but the reference and the value stored in the pointer are forced to share memory address.
     
-    Value and memory adress updates are not made in real-time, but the properties update the non-coincident values:
+    Value and memory address updates are not made in real-time, but the properties update the non-coincident values:
     * **Getter**: it updates its own value to the variable's one (if variable was given instead of literal).
     * **Setter**: it updates the value of the variable to its own (if variable was given instead of literal).
     * **Deleter**: it also deletes the original variable (if variable was given instead of literal).
