@@ -28,13 +28,17 @@ class Pointer(Generic[PT]):
     When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory address.
     This way, all references pointing to the same non-mutable object don't change when the pointer is updated, avoiding a potential mess.
     
+    It is possible to point to every reference linked to the value, but the pointer's value will not be updated when one or more references change.
+    Instead, those references will be untargeted.
+    Once the number of targeted references drops to `0`, the value is deleted and the pointer raises an error when called.
+    
     Non-mutable objects still change their memory addresses when re-referenced,
     but the reference and the value stored in the pointer are forced to share memory address.
     
     Value and memory address updates are not made in real-time, but the properties update the non-coincident values:
-    * **Getter**: it updates its own value to the variable's one (if variable was given instead of literal).
-    * **Setter**: it updates the value of the variable to its own (if variable was given instead of literal).
-    * **Deleter**: it also deletes the original variable (if variable was given instead of literal).
+    * **Getter**: it updates its own value to the variable's one (if a single reference is targeted).
+    * **Setter**: it updates the value of the variable to its own.
+    * **Deleter**: it also deletes the original variable.
     ---
     
     Attributes
@@ -106,12 +110,12 @@ class Pointer(Generic[PT]):
         Raises
         ------
         NameError
-            If the object or targeted reference exists no more.
+            If the object doesn't exist or reference is not defined.
         ValueError
-            If the reference's value doesn't match the pointer's value.
+            If the reference's value doesn't match the given value.
             Also if no argument is given.
         AttributeError
-            If the targeted attribute doesn't belong to the targeted instance.
+            If the targeted attribute doesn't belong to the targeted object.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
@@ -387,7 +391,7 @@ class Pointer(Generic[PT]):
         -------
         Any
             Object or attribute value the pointer is pointing to.
-            It is returned as-is, instead of a copy, so it can be manipulated thorugh its own methods.
+            It is returned as-is, instead of a copy, so it can be manipulated through its own methods.
         
         Raises
         ------
