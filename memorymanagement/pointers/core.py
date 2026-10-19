@@ -325,6 +325,8 @@ class Pointer(Generic[PT]):
             except IndexError:
                 # Raise it again
                 raise IndexError("Provided index is out of range")
+        # Return the `Pointer` object
+        return self
     
     # Switch reference
     def switch_ref(self,reference:str|None=None):
@@ -369,6 +371,8 @@ class Pointer(Generic[PT]):
             raise NameError(f"Name \"{reference}\" is not defined")
         # Store the reference into its corresponding hidden attribute
         self._name=reference if reference else self._name
+        # Return the `Pointer` object
+        return self
     
     #* PROPERTIES
     # Value
