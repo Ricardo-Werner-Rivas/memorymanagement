@@ -298,7 +298,7 @@ class Pointer(Generic[PT]):
         
         Returns
         -------
-        tuple[str]
+        tuple[str]|Generator[str]
             References pointing to current pointer's value.
         """
         # If the stored reference is a string
