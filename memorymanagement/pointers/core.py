@@ -13,9 +13,11 @@
 #* IMPORTS
 # Import "TypeVar" and "Generic"
 from typing import TypeVar,Generic
+# Import "Generator" from "collections.abc" module
+from collections.abc import Generator
 # Import "currentframe" from "inspect" package
 from inspect import currentframe
-# Define type with TypeVar
+# Define type with `TypeVar`
 PT=TypeVar("PT")
 
 #* MAIN CLASS
@@ -283,9 +285,14 @@ class Pointer(Generic[PT]):
                 raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
     
     # Get references
-    def get_refs(self)->tuple[str]:
+    def get_refs(self,*,lazy:bool=False)->tuple[str]|Generator[str]:
         """
         Gets all the references pointing to the current value of the `Pointer` object.
+        
+        Arguments
+        ---------
+        lazy : `bool`, Optional
+            A lazy (generator) object is returned instead of a tuple.
         
         Returns
         -------
@@ -296,13 +303,24 @@ class Pointer(Generic[PT]):
         if isinstance(self._name,str):
             # Execute `value` property getter to update pointer's value
             self.value
-        # Find and return all the references pointing to the pointer's value
-        return tuple(key for key,v in self._vars_dict.items() if v is self._value)
+        # Obtain all the references as a lazy object (generator)
+        references=(key for key,v in self._vars_dict.items() if v is self._value)
+        # Return all the references pointing to the pointer's value either as a lazy object or as a tuple
+        return references if lazy else tuple(references)
     
     # Select reference by index
-    def select_ref(self,index:int=0,/,*,random:bool=False):
+    def select_ref(self,index:int=0,/,*,random:bool=False,fast:bool=False):
         """
         Selects a reference from the ones linked to the pointers value using the provided index.
+        
+        In case there are too many variables in the corresponding dictionary, a fast method is available.
+        The fast method loops through the lazy `get_refs` method's resultant object until the desired reference is found
+        instead of looping through the whole variables' dictionary, which is what the normal `get_refs` method does,
+        and indexing the resulting tuple.
+        
+        Fast method is only needed in case of massive amounts of variables.
+        Performance difference is minimal for any other case.
+        Fast method is only available for positive indexes.
         
         Arguments
         ---------
@@ -312,6 +330,20 @@ class Pointer(Generic[PT]):
             Defaults to the first position (`0`).
         random : `bool`, Optional
             Whether to select a random reference from the available ones (`True`) or not (`False`).
+            Defaults to `False`.
+        fast : `bool`, Optional
+            Whether to use the fast method to select the reference (`True`) or not (`False`).
+            Defaults to `False`.
+        
+        Returns
+        -------
+        Pointer
+            The `Pointer` object is returned.
+        
+        Raises
+        ------
+        IndexError
+            When given index is out of range.
         """
         # If a random reference is required
         if random:
@@ -323,11 +355,22 @@ class Pointer(Generic[PT]):
         else:
             # Try
             try:
-                # Switch reference
-                self.switch_ref(self.get_refs()[index])
-            # If an "IndexError" is raised
-            except IndexError:
-                # Raise it again
+                # If the given index is not negative
+                if fast and index>=0:
+                    # Store a lazy object of references
+                    references=self.get_refs(lazy=True)
+                    # Loop number up to the given index
+                    for i in range(index):
+                        # Call the next value of the generator
+                        next(references)
+                    # Switch to the next value of the generator (desired reference)
+                    self.switch_ref(next(references))
+                else:
+                    # Switch reference
+                    self.switch_ref(self.get_refs()[index])
+            # If an "IndexError" or a "StopIteration" are raised
+            except IndexError,StopIteration:
+                # Raise an "IndexError"
                 raise IndexError("Provided index is out of range")
         # Return the `Pointer` object
         return self
@@ -343,6 +386,11 @@ class Pointer(Generic[PT]):
             Reference, pointing to the current pointer's value, to switch the pointer to.
             If empty, the `Pointer` object targets every reference pointing to its current value,
             as if it were actually pointing to the value's memory address.
+        
+        Returns
+        -------
+        Pointer
+            The `Pointer` object is returned.
         
         Raises
         ------
