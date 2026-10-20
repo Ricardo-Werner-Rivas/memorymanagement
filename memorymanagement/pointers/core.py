@@ -13,9 +13,11 @@
 #* IMPORTS
 # Import "TypeVar" and "Generic"
 from typing import TypeVar,Generic
+# Import "Generator" from "collections.abc" module
+from collections.abc import Generator
 # Import "currentframe" from "inspect" package
 from inspect import currentframe
-# Define type with TypeVar
+# Define type with `TypeVar`
 PT=TypeVar("PT")
 
 #* MAIN CLASS
@@ -25,16 +27,20 @@ class Pointer(Generic[PT]):
     Implements pointers in Python for both mutable (though unneded) and non-mutable objects.
     These pointers are completely safe and do not work internally as C's pointers, they are just an imitation of their behaviour.
     
-    When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory adress.
+    When a Pointer instance is created, though it stores a value, it "points" to an specific reference, not the value in a memory address.
     This way, all references pointing to the same non-mutable object don't change when the pointer is updated, avoiding a potential mess.
     
-    Non-mutable objects still change their memory adresses when re-referenced,
-    but the reference and the value stored in the pointer are forced to share memory adress.
+    It is possible to point to every reference linked to the value, but the pointer's value will not be updated when one or more references change.
+    Instead, those references will be untargeted.
+    Once the number of targeted references drops to `0`, the value is deleted and the pointer raises an error when called.
     
-    Value and memory adress updates are not made in real-time, but the properties update the non-coincident values:
-    * **Getter**: it updates its own value to the variable's one (if variable was given instead of literal).
-    * **Setter**: it updates the value of the variable to its own (if variable was given instead of literal).
-    * **Deleter**: it also deletes the original variable (if variable was given instead of literal).
+    Non-mutable objects still change their memory addresses when re-referenced,
+    but the reference and the value stored in the pointer are forced to share memory address.
+    
+    Value and memory address updates are not made in real-time, but the properties update the non-coincident values:
+    * **Getter**: it updates its own value to the variable's one (if a single reference is targeted).
+    * **Setter**: it updates the value of the variable to its own.
+    * **Deleter**: it also deletes the original variable.
     ---
     
     Attributes
@@ -106,12 +112,12 @@ class Pointer(Generic[PT]):
         Raises
         ------
         NameError
-            If the object or targeted reference exists no more.
+            If the object doesn't exist or reference is not defined.
         ValueError
-            If the reference's value doesn't match the pointer's value.
+            If the reference's value doesn't match the given value.
             Also if no argument is given.
         AttributeError
-            If the targeted attribute doesn't belong to the targeted instance.
+            If the targeted attribute doesn't belong to the targeted object.
         """
         # Store hidden attributes "_attr" and "_vars_dict"
         self._attr=attr # Instance attribute to point to
@@ -279,22 +285,44 @@ class Pointer(Generic[PT]):
                 raise NameError(f"No reference is pointing to given value {value} ({value.__class__.__name__})")
     
     # Get references
-    def get_refs(self)->tuple[str]:
+    def get_refs(self,*,lazy:bool=False)->tuple[str]|Generator[str]:
         """
         Gets all the references pointing to the current value of the `Pointer` object.
         
+        Arguments
+        ---------
+        lazy : `bool`, Optional
+            A lazy (generator) object is returned instead of a tuple.
+            The lazy object is generated from a copy of the variables' dictionary at the moment
+            the method is called to prevent errors.
+        
         Returns
         -------
-        tuple[str]
+        tuple[str]|Generator[str]
             References pointing to current pointer's value.
         """
-        # Find and return all the references pointing to the pointer's value
-        return tuple(key for key,v in self._vars_dict.items() if v is self._value)
+        # If the stored reference is a string
+        if isinstance(self._name,str):
+            # Execute `value` property getter to update pointer's value
+            self.value
+        # Obtain all the references as a lazy object (generator)
+        references=(key for key,value in self._vars_dict.copy().items() if value is self._value)
+        # Return all the references pointing to the pointer's value either as a lazy object or as a tuple
+        return references if lazy else tuple(references)
     
     # Select reference by index
-    def select_ref(self,index:int=0,/,*,random:bool=False):
+    def select_ref(self,index:int=0,/,*,random:bool=False,fast:bool=False):
         """
         Selects a reference from the ones linked to the pointers value using the provided index.
+        
+        In case there are too many variables in the corresponding dictionary, a fast method is available.
+        The fast method loops through the lazy `get_refs` method's resultant object until the desired reference is found
+        instead of looping through the whole variables' dictionary, which is what the normal `get_refs` method does,
+        and indexing the resulting tuple.
+        
+        Fast method is only needed in case of massive amounts of variables.
+        Performance difference is minimal for any other case.
+        Fast method is only available for positive indexes.
         
         Arguments
         ---------
@@ -304,6 +332,20 @@ class Pointer(Generic[PT]):
             Defaults to the first position (`0`).
         random : `bool`, Optional
             Whether to select a random reference from the available ones (`True`) or not (`False`).
+            Defaults to `False`.
+        fast : `bool`, Optional
+            Whether to use the fast method to select the reference (`True`) or not (`False`).
+            Defaults to `False`.
+        
+        Returns
+        -------
+        Pointer
+            The `Pointer` object is returned.
+        
+        Raises
+        ------
+        IndexError
+            When given index is out of range.
         """
         # If a random reference is required
         if random:
@@ -315,12 +357,25 @@ class Pointer(Generic[PT]):
         else:
             # Try
             try:
-                # Switch reference
-                self.switch_ref(self.get_refs()[index])
-            # If an "IndexError" is raised
-            except IndexError:
-                # Raise it again
+                # If the given index is not negative
+                if fast and index>=0:
+                    # Store a lazy object of references
+                    references=self.get_refs(lazy=True)
+                    # Loop number up to the given index
+                    for i in range(index):
+                        # Call the next value of the generator
+                        next(references)
+                    # Switch to the next value of the generator (desired reference)
+                    self.switch_ref(next(references))
+                else:
+                    # Switch reference
+                    self.switch_ref(self.get_refs()[index])
+            # If an "IndexError" or a "StopIteration" are raised
+            except IndexError,StopIteration:
+                # Raise an "IndexError"
                 raise IndexError("Provided index is out of range")
+        # Return the `Pointer` object
+        return self
     
     # Switch reference
     def switch_ref(self,reference:str|None=None):
@@ -333,6 +388,11 @@ class Pointer(Generic[PT]):
             Reference, pointing to the current pointer's value, to switch the pointer to.
             If empty, the `Pointer` object targets every reference pointing to its current value,
             as if it were actually pointing to the value's memory address.
+        
+        Returns
+        -------
+        Pointer
+            The `Pointer` object is returned.
         
         Raises
         ------
@@ -365,6 +425,8 @@ class Pointer(Generic[PT]):
             raise NameError(f"Name \"{reference}\" is not defined")
         # Store the reference into its corresponding hidden attribute
         self._name=reference if reference else self._name
+        # Return the `Pointer` object
+        return self
     
     #* PROPERTIES
     # Value
@@ -387,7 +449,7 @@ class Pointer(Generic[PT]):
         -------
         Any
             Object or attribute value the pointer is pointing to.
-            It is returned as-is, instead of a copy, so it can be manipulated thorugh its own methods.
+            It is returned as-is, instead of a copy, so it can be manipulated through its own methods.
         
         Raises
         ------
