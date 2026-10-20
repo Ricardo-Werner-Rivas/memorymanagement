@@ -293,6 +293,8 @@ class Pointer(Generic[PT]):
         ---------
         lazy : `bool`, Optional
             A lazy (generator) object is returned instead of a tuple.
+            The lazy object is generated from a copy of the variables' dictionary at the moment
+            the method is called to prevent errors.
         
         Returns
         -------
@@ -304,7 +306,7 @@ class Pointer(Generic[PT]):
             # Execute `value` property getter to update pointer's value
             self.value
         # Obtain all the references as a lazy object (generator)
-        references=(key for key,v in self._vars_dict.items() if v is self._value)
+        references=(key for key,value in self._vars_dict.copy().items() if value is self._value)
         # Return all the references pointing to the pointer's value either as a lazy object or as a tuple
         return references if lazy else tuple(references)
     
