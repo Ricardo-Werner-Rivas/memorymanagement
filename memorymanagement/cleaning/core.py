@@ -11,11 +11,11 @@
 #*===============================================================================================================================
 
 #* IMPORTS
-# modules from sys
+# `currentframe` from `sys`
 from inspect import currentframe
 
 #* MAIN CLASS
-# Class "Cleaner"
+# Class `Cleaner`
 class Cleaner:
     """
     Class for references management. It keeps track of the names of the global variables to be deleted and deletes them when ordered.
@@ -87,21 +87,21 @@ class Cleaner:
         """
         # Track and store variables' dictionary
         self._vars_dict=currentframe().f_back.f_locals
-        # If a "not_delete" list is not passed
+        # If a `not_delete` list is not passed
         if not not_delete:
             # Take the list of variables' dictionay's keys
             not_delete=list(self._vars_dict)
         # If some variables were excluded
         if len(excluded)>0:
-            # Store only the ones which are not already in the "not_delete" list
+            # Store only the ones which are not already in the `not_delete` list
             excluded=[var for var in excluded if var not in not_delete]
         # If some variables were flagged
         if len(flagged)>0:
-            # Store only the ones which are not in the "not_delete" list
+            # Store only the ones which are not in the `not_delete` list
             flagged=[var for var in flagged if var not in not_delete]
         # Loop through the variables' dictionary
         for key,value in self._vars_dict.copy().items():
-            # Delete every other "Cleaner" object
+            # Delete every other `Cleaner` object
             if isinstance(value,Cleaner) and key in self._vars_dict.keys():
                 del self._vars_dict[key]
         # Declare the main hidden attributes
@@ -127,7 +127,7 @@ class Cleaner:
         """
         # If there are variables to exclude
         if exclude:
-            # If "exclude" content is a string
+            # If `exclude` content is a string
             if isinstance(exclude,str):
                 # Make it a list
                 exclude=[exclude]
@@ -135,16 +135,16 @@ class Cleaner:
             self._excluded.extend(tuple(var for var in exclude if var not in self._excluded and var not in self._not_delete))
         # If the are excluded variables to include
         if include:
-            # If "include" content is a string
+            # If `include` content is a string
             if isinstance(include,str):
                 # Make it a list
                 include=[include]
-            # Loop for "include"
+            # Loop for `include`
             for var in include:
-                # Remove every occurrence of the variables to include from the "excluded" list
+                # Remove every occurrence of the variables to include from the `excluded` list
                 while var in self._excluded:
                     self._excluded.remove(var)
-        # Rebuild the "flagged" list
+        # Rebuild the `flagged` list
         self._flagged=[var for var in self._vars_dict if var not in self.not_delete and var not in self.excluded]
     
     # Exclude
@@ -159,10 +159,10 @@ class Cleaner:
         """
         # Loop for the variables to exclude
         for var in exclude:
-            # Remove from the "flagged" list
+            # Remove from the `flagged` list
             while var in self._flagged:
                 self._flagged.remove(var)
-            # Introduce variable into the "excluded" list
+            # Introduce variable into the `excluded` list
             if var not in self.excluded and var not in self.not_delete:
                 self._excluded.append(var)
     
@@ -178,10 +178,10 @@ class Cleaner:
         """
         # Loop for the variables to include
         for var in include:
-            # Introduce variable into the "flagged" list
+            # Introduce variable into the `flagged` list
             if var not in self.flagged and var not in self.not_delete:
                 self._flagged.append(var)
-            # Remove from "excluded" list
+            # Remove from `excluded` list
             while var in self._excluded:
                 self._excluded.remove(var)
     
@@ -195,14 +195,14 @@ class Cleaner:
         include : `str`|`list[str]`|`tuple[str]`|`None`, Optional
             Variables not to be excluded from the cleaning process
         """
-        # Introduce excluded variables into the "excluded" list
+        # Introduce excluded variables into the `excluded` list
         self._excluded.extend(self.flagged)
-        # Clear the "flagged" list
+        # Clear the `flagged` list
         self._flagged.clear()
         
         # If there are exceptions
         if include:
-            # If "include" content is a string
+            # If `include` content is a string
             if isinstance(include,str):
                 # Include varianle
                 self.include(include)
@@ -221,14 +221,14 @@ class Cleaner:
         exclude : `str`|`list[str]`|`tuple[str]`|`None`, Optional
             Variables not to be included in the cleaning process
         """
-        # Introduce excluded variables into the "flagged" list
+        # Introduce excluded variables into the `flagged` list
         self._flagged.extend(self.excluded)
-        # Clear the "excluded" list
+        # Clear the `excluded` list
         self._excluded.clear()
         
         # If the are exceptions
         if exclude:
-            # If "exclude" content is a string
+            # If `exclude` content is a string
             if isinstance(exclude,str):
                 # Exclude variable
                 self.exclude(exclude)
@@ -255,13 +255,13 @@ class Cleaner:
         if not flagged and not excluded:
             # Pass
             pass
-        # If "flagged" is to be purged
+        # If `flagged` is to be purged
         if flagged:
-            # Clear "flagged" list
+            # Clear `flagged` list
             self._flagged.clear()
-        # If "excluded" is to be purged
+        # If `excluded` is to be purged
         if excluded:
-            # Clear "excluded" list
+            # Clear `excluded` list
             self._excluded.clear()
     
     # Clean
@@ -270,17 +270,17 @@ class Cleaner:
         Culminates the cleaning process.
         Erases all the flagged references.
         """
-        # Loop for "flagged" list
+        # Loop for `flagged` list
         for var in self._flagged:
             # If current variable name is in the variables' dictionary
             if var in self._vars_dict:
                 # Delete variable
                 del self._vars_dict[var]
-        # Clear "flagged" list
+        # Clear `flagged` list
         self._flagged.clear()
     
     #* PROPERTIES
-    # Reference pointing to "Cleaner" object
+    # Reference pointing to `Cleaner` object
     @property
     # Getter
     def name(self)->str:
@@ -292,13 +292,13 @@ class Cleaner:
         str
             Reference of the `Cleaner` instance
         """
-        # If reference is not set or it doesn't point to the "Cleaner" object
+        # If reference is not set or it doesn't point to the `Cleaner` object
         if not self._name or self._vars_dict[self._name] is not self:
-            # Set "_name" hidden attribute to "None"
+            # Set "_name" hidden attribute to `None`
             self._name=None
             # Loop for variables dictionary
             for key,value in self._vars_dict.items():
-                # If current value is the "Cleaner" object
+                # If current value is the `Cleaner` object
                 if value is self:
                     # Store the reference
                     self._name=key
@@ -306,7 +306,7 @@ class Cleaner:
                     break
             # If reference remains empty
             if not self._name:
-                # Raise a "ReferenceError"
+                # Raise a `ReferenceError`
                 raise ReferenceError("\"Cleaner\" object is not referenced")
         # Return the reference
         return self._name
@@ -325,11 +325,11 @@ class Cleaner:
         list[str]
             Copy of the `not_delete` list, containing refences never to be deleted by the cleaning process
         """
-        # If reference is not in the "not_delete" list
+        # If reference is not in the `not_delete` list
         if self.name not in self._not_delete:
-            # Add reference to the "not_delete" list
+            # Add reference to the `not_delete` list
             self._not_delete.append(self.name)
-        # Return a shallow copy of the "not_delete" list
+        # Return a shallow copy of the `not_delete` list
         return self._not_delete.copy()
     #^ No setter
     #^ No deleter
@@ -346,7 +346,7 @@ class Cleaner:
         list[str]
             Copy of the `excluded` list, containing the references excluded from the process by the user
         """
-        # Return a shallow copy of the "excluded" list
+        # Return a shallow copy of the `excluded` list
         return self._excluded.copy()
     #^ No setter
     #^ No deleter
@@ -363,7 +363,7 @@ class Cleaner:
         list[str]
             Copy of the `flagged` list, containing the references that will be deleted by the memory cleaning process
         """
-        # Return a shallow copy of the "flagged" list
+        # Return a shallow copy of the `flagged` list
         return self._flagged.copy()
     #^ No setter
     #^ No deleter

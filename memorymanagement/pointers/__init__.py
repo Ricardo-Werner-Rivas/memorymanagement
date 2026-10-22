@@ -19,6 +19,6 @@ If all references are registered, synchronization is only possible when modified
 This decorator makes any function able to receive `Pointer` objects instead of the originally expected.
 """
 # Import from modules
-from .core import Pointer # Class "Pointer"
-from .decorators import pointerize # Decorator "pointerize"
+from .core import Pointer # Class `Pointer`
+from .decorators import pointerize # Decorator `pointerize`
 __all__=["Pointer","pointerize"]

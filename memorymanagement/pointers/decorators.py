@@ -21,7 +21,7 @@ from functools import wraps
 from .core import Pointer
 
 #* DECORATORS
-# pointerize
+# Decorator `pointerize`
 def pointerize(func:function):
     """
     Allows the decorated function to receive pointers instead of the normally expected values.
@@ -81,7 +81,7 @@ def pointerize(func:function):
         # Empty dictionary, future source to update pointers' values
         frame_data={}
         
-        # Tracer function compatible with the sys.settrace API
+        # Tracer function compatible with the `sys.settrace` API
         def tracer(frame,event,arg):
             if event=="return" and frame.f_code is func.__code__:
                 frame_data.update(frame.f_locals)
