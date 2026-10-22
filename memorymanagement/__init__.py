@@ -18,5 +18,5 @@ Allows a function to receive `Pointer` objects instead of the normally expected 
 from .cleaning import Cleaner
 from .pointers import Pointer,pointerize
 
-# Declare "__all__"
+# Declare `__all__`
 __all__=["Cleaner","Pointer","pointerize"]
