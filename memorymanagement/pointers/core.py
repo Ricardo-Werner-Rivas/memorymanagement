@@ -405,9 +405,9 @@ class Pointer(Generic[PT]):
         # If no reference is given
         if not reference:
             # Get all references pointing to the current value
-            self._name=self.get_refs()
+            reference=self.get_refs()
             # If no reference was found
-            if len(self._name)==0:
+            if len(reference)==0:
                 # Delete the pointer's current value
                 del self._value
                 # If an attribute name was given
@@ -419,13 +419,13 @@ class Pointer(Generic[PT]):
         # Else, if the given reference is in the variables' frame but it doesn't point to current the pointer's value
         elif reference in self._vars_dict and self._vars_dict[reference] is not self.value:
             # Raise a `ValueError`
-            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self.value} ({self.value.__class__.__name__})")
+            raise ValueError(f"Name \"{reference}\" doesn't point to pointer's value {self._value} ({self._value.__class__.__name__})")
         # Else, if the given reference is not in the variables' frame
         elif reference not in self._vars_dict:
             # Raise a `NameError`
             raise NameError(f"Name \"{reference}\" is not defined")
         # Store the reference into its corresponding hidden attribute
-        self._name=reference if reference else self._name
+        self._name=reference
         # Return the `Pointer` object
         return self
     
@@ -512,7 +512,7 @@ class Pointer(Generic[PT]):
             # If a tuple is stored
             if isinstance(self.reference,tuple):
                 # Loop for references
-                for ref in self.reference:
+                for ref in self._name:
                     # Set all the targeted references to the new value
                     self._vars_dict[ref]=value
             # Else, if the new pointer's value differs from the original variable
@@ -534,10 +534,8 @@ class Pointer(Generic[PT]):
             del self._value
             # If a tuple is stored
             if isinstance(self.reference,tuple):
-                # Get all references pointing to the current value
-                self._name=self.get_refs()
                 # Loop for references
-                for ref in self.reference:
+                for ref in self._name:
                     # Delete current reference from the variables' dictionary
                     del self._vars_dict[ref]
             # Else
@@ -575,7 +573,7 @@ class Pointer(Generic[PT]):
                     # Delete `_attr` hidden attribute
                     del self._attr
                 # Raise a `NameError`
-                raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
+                raise NameError("The object has already been deleted, so the pointer no longer has access to it.")
         # Return the stored reference(s)
         return self._name
     #^ No setter
