@@ -438,6 +438,8 @@ class Pointer(Generic[PT]):
         frame=currentframe().f_back
         # Set `_var_dict` hidden attribute to the global or the current local frame
         self._vars_dict=frame.f_globals if frame.f_globals!=self._vars_dict else frame.f_locals
+        # Return the `Pointer` object
+        return self
     
     #* PROPERTIES
     # Value
