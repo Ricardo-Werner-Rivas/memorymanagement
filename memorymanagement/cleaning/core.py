@@ -81,9 +81,11 @@ class Cleaner:
         not_delete : `list[str]`|`None`, Optional
             List of variables to never be deleted. It takes the list of variables at the declaration moment by default.
         excluded : `list[str]`, Optional
-            List of variables to be excluded from the memory cleaning process. Empty list by default.
+            List of variables to be excluded from the memory cleaning process.
+            Empty list by default.
         flagged : `list[str]`, Optional
-            List of variables to be erased from memory. Empty list by default.
+            List of variables to be erased from memory.
+            Empty list by default.
         """
         # Track and store variables' dictionary
         self._vars_dict=currentframe().f_back.f_locals
@@ -188,12 +190,12 @@ class Cleaner:
     # Exclude all flagged variables
     def exclude_all(self,*,include:str|list[str]|tuple[str]|None=None):
         """
-        Exclude all the flagged variables and clear the `flagged` list
+        Exclude all the flagged variables and clear the `flagged` list.
         
         Arguments
         ---------
         include : `str`|`list[str]`|`tuple[str]`|`None`, Optional
-            Variables not to be excluded from the cleaning process
+            Variables not to be excluded from the cleaning process.
         """
         # Introduce excluded variables into the `excluded` list
         self._excluded.extend(self.flagged)
@@ -214,12 +216,12 @@ class Cleaner:
     # Include all excluded variables
     def include_all(self,*,exclude:str|list[str]|tuple[str]|None=None):
         """
-        Flag all the excluded variables and clear the `excluded` list
+        Flag all the excluded variables and clear the `excluded` list.
         
         Arguments
         ---------
         exclude : `str`|`list[str]`|`tuple[str]`|`None`, Optional
-            Variables not to be included in the cleaning process
+            Variables not to be included in the cleaning process.
         """
         # Introduce excluded variables into the `flagged` list
         self._flagged.extend(self.excluded)
@@ -285,16 +287,16 @@ class Cleaner:
     # Getter
     def name(self)->str:
         """
-        Gets the self reference of the object
+        Gets the self reference of the object.
         
         Returns
         -------
         str
-            Reference of the `Cleaner` instance
+            Reference of the `Cleaner` instance.
         """
         # If reference is not set or it doesn't point to the `Cleaner` object
         if not self._name or self._vars_dict[self._name] is not self:
-            # Set "_name" hidden attribute to `None`
+            # Set `_name` hidden attribute to `None`
             self._name=None
             # Loop for variables dictionary
             for key,value in self._vars_dict.items():
@@ -318,12 +320,12 @@ class Cleaner:
     # Getter
     def not_delete(self)->list[str]:
         """
-        Gets the list of variables, mostly critical, not to be deleted
+        Gets the list of variables, mostly critical, not to be deleted.
         
         Returns
         -------
         list[str]
-            Copy of the `not_delete` list, containing refences never to be deleted by the cleaning process
+            Copy of the `not_delete` list, containing refences never to be deleted by the cleaning process.
         """
         # If reference is not in the `not_delete` list
         if self.name not in self._not_delete:
@@ -339,12 +341,12 @@ class Cleaner:
     # Getter
     def excluded(self)->list[str]:
         """
-        Gets the list of variables specifically excluded from the cleaning process
+        Gets the list of variables specifically excluded from the cleaning process.
         
         Returns
         -------
         list[str]
-            Copy of the `excluded` list, containing the references excluded from the process by the user
+            Copy of the `excluded` list, containing the references excluded from the process by the user.
         """
         # Return a shallow copy of the `excluded` list
         return self._excluded.copy()
@@ -356,12 +358,12 @@ class Cleaner:
     # Getter
     def flagged(self)->list[str]:
         """
-        Gets the list of variables to be deleted by the cleaning process
+        Gets the list of variables to be deleted by the cleaning process.
         
         Returns
         -------
         list[str]
-            Copy of the `flagged` list, containing the references that will be deleted by the memory cleaning process
+            Copy of the `flagged` list, containing the references that will be deleted by the memory cleaning process.
         """
         # Return a shallow copy of the `flagged` list
         return self._flagged.copy()
