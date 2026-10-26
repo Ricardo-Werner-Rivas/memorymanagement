@@ -204,14 +204,8 @@ class Cleaner:
         
         # If there are exceptions
         if include:
-            # If `include` content is a string
-            if isinstance(include,str):
-                # Include variable
-                self.include(include)
-            # Else
-            else:
-                # Include variables (unpacking)
-                self.include(*include)
+            # Include variable(s)
+            self.include(*include if not isinstance(include,str) else include)
     
     # Include all excluded variables
     def include_all(self,*,exclude:str|list[str]|tuple[str]|None=None):
@@ -230,14 +224,8 @@ class Cleaner:
         
         # If the are exceptions
         if exclude:
-            # If `exclude` content is a string
-            if isinstance(exclude,str):
-                # Exclude variable
-                self.exclude(exclude)
-            # Else
-            else:
-                # Exclude variables (unpacking)
-                self.exclude(*exclude)
+            # Exclude variable(s)
+            self.exclude(*exclude if not isinstance(exclude,str) else exclude)
     
     # Purge flagged and excluded variables
     def purge(self,*,flagged:bool=True,excluded:bool=True):
