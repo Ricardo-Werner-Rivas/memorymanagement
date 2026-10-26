@@ -64,6 +64,8 @@ class Pointer(Generic[PT]):
             Returns all the references pointing to the pointer's value.
         **switch_ref**
             Allows to switch between the references pointing to the pointer's value.
+        **switch_frame**
+            Allows to switch between the global and local frames.
     
     Properties
     ----------
@@ -83,10 +85,7 @@ class Pointer(Generic[PT]):
     ## Currently supported
     Both global and local variables can be pointed at.
     
-    Literals are **not** supported because of it being useless, and using them won't work.
-    The only use for introducing a literal instead of a referenced value is for the class code
-    to provide all the references pointing to the given literal, through the `get_refs` method,
-    if there is more than one.
+    Non-referenced literals are **not** supported.
     """
     #* METHODS
     # __init__
