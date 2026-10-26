@@ -107,9 +107,9 @@ class Cleaner:
             if isinstance(value,Cleaner) and key in self._vars_dict.keys():
                 del self._vars_dict[key]
         # Declare the main hidden attributes
-        self._not_delete=not_delete.copy()
-        self._excluded=excluded.copy()
-        self._flagged=flagged.copy()
+        self._not_delete=not_delete
+        self._excluded=excluded
+        self._flagged=flagged
         self._name=None
     
     # Update
@@ -176,7 +176,7 @@ class Cleaner:
         Arguments
         ---------
         include : `tuple[str]`
-            Stream of references to be included.
+            Stream of references to be included into the cleaning process.
         """
         # Loop for the variables to include
         for var in include:
