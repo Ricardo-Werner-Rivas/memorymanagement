@@ -206,7 +206,7 @@ class Cleaner:
         if include:
             # If `include` content is a string
             if isinstance(include,str):
-                # Include varianle
+                # Include variable
                 self.include(include)
             # Else
             else:
@@ -247,10 +247,10 @@ class Cleaner:
         Arguments
         ---------
         flagged : `bool`, Optional
-            Wether the `flagged` list should be purged (`True`) or not (`False`).
+            Whether the `flagged` list should be purged (`True`) or not (`False`).
             `True` by default
         excluded : `bool`, Optional
-            Wether the `excluded` list should be purged (`True`) or not (`False`).
+            Whether the `excluded` list should be purged (`True`) or not (`False`).
             `True` by default
         """
         # If there is no list to be purged
