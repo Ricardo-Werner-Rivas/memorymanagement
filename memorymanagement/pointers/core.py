@@ -713,45 +713,27 @@ class Pointer(Generic[PT]):
     #* COMPARATIVE METHODS
     # Equality
     def __eq__(self,value):
-        if isinstance(value,Pointer):
-            return self.value==value.value
-        else:
-            return self.value==value
+        return self.value==value.value if isinstance(value,Pointer) else self.value==value
     
     # Inequality
     def __ne__(self,value):
-        if isinstance(value,Pointer):
-            return self.value!=value.value
-        else:
-            return self.value!=value
+        return self.value!=value.value if isinstance(value,Pointer) else self.value!=value
     
     # Lower than
     def __lt__(self,value):
-        if isinstance(value,Pointer):
-            return self.value<value.value
-        else:
-            return self.value<value
+        return self.value<value.value if isinstance(value,Pointer) else self.value<value
     
     # Lower or equal
     def __le__(self,value):
-        if isinstance(value,Pointer):
-            return self.value<=value.value
-        else:
-            return self.value<=value
+        return self.value<=value.value if isinstance(value,Pointer) else self.value<=value
     
     # Greater than
     def __gt__(self,value):
-        if isinstance(value,Pointer):
-            return self.value>value.value
-        else:
-            return self.value>value
+        return self.value>value.value if isinstance(value,Pointer) else self.value>value
     
     # Greater or equal
     def __ge__(self,value):
-        if isinstance(value,Pointer):
-            return self.value>=value.value
-        else:
-            return self.value>=value
+        return self.value>=value.value if isinstance(value,Pointer) else self.value>=value
     
     #* UNARY METHODS
     # Negative
