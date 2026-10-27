@@ -45,14 +45,14 @@ class Pointer(Generic[PT]):
     
     Attributes
     ----------
-    value : `Any`, Hidden
+    value : `Any`, Private
         Object to point to.
-    attr : `str`|`None`, Hidden
-        Attribute of class instance. Only if `value` is a class instance.
-    name : `str`, Hidden
-        Name of the global variable to which the pointer is pointing.
-        Could require an input from the user to introduce the name of the variable if more than one is found.
-    vars_dict : `dict[str,Any]`, Hidden
+    attr : `str`|`None`, Private
+        Name of class or instance attribute. Only if `value` is a class or instance.
+    name : `str`, Private
+        Name of the variable to which the pointer is pointing.
+        Could be a tuple of names.
+    vars_dict : `dict[str,Any]`, Private
         Dictionary of variables.
         Set to `inspect.currentframe().f_back.f_locals`.
     
@@ -95,13 +95,13 @@ class Pointer(Generic[PT]):
         ---------
         value : `Any`|`None`, Optional
             Object to point to.
-            If you want to point to an attribute, pass to this argument the class or instance without the attribute.
+            If you want to point to an attribute, pass to this argument the class or instance without the attribute name.
             If no reference is given, the pointer targets all the value's references.
             Note that the pointer points to the references of the object that shares the given value's identity, not content.
         reference : `str`|`None`, Optional
             Name linked to the value to point to.
             Useful in case there are multiple references pointing to the same object.
-            Reference must be linked to the given value's identity.
+            Reference must be linked to the given value's identity, if a value was given.
             If no reference is given, all value's references will be targeted.
             If no value is given, the reference will be used to locate the target object.
         attr : `str`|`None`, Optional
@@ -312,7 +312,7 @@ class Pointer(Generic[PT]):
     # Select reference by index
     def select_ref(self,index:int=0,/,*,random:bool=False,fast:bool=False):
         """
-        Selects a reference from the ones linked to the pointers value using the provided index.
+        Selects a reference from the ones linked to the pointer's value using the provided index.
         
         In case there are too many variables in the corresponding dictionary, a fast method is available.
         The fast method loops through the lazy `get_refs` method's resultant object until the desired reference is found
@@ -332,6 +332,7 @@ class Pointer(Generic[PT]):
         random : `bool`, Optional
             Whether to select a random reference from the available ones (`True`) or not (`False`).
             Defaults to `False`.
+            `random` argument ignores any other argument.
         fast : `bool`, Optional
             Whether to use the fast method to select the reference (`True`) or not (`False`).
             Defaults to `False`.
