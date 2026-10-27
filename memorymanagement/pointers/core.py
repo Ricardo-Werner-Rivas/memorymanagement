@@ -432,6 +432,11 @@ class Pointer(Generic[PT]):
     def switch_frame(self):
         """
         Switches the variables' frame from current local to global and vice versa.
+        
+        Returns
+        -------
+        Pointer
+            The `Pointer` object is returned.
         """
         # Get the frame of origin
         frame=currentframe().f_back
