@@ -683,36 +683,36 @@ class Pointer(Generic[PT]):
     #* IN-PLACE ARITHMETIC METHODS
     # Addition
     def __iadd__(self,value):
-        self.value=self.value+value
+        self.value+=value
         return self
     
     # Difference
     def __isub__(self,value):
-        self.value=self.value-value
+        self.value-=value
         return self
     
     # Multiplication
     def __imul__(self,value):
-        self.value=self.value*value
+        self.value*=value
         return self
     
     # Fraction
     def __itruediv__(self,value):
-        self.value=self.value/value
+        self.value/=value
         return self
     
     # Integer division
     def __ifloordiv__(self,value):
-        self.value=self.value//value
+        self.value//=value
         return self
     
     # Module
     def __imod__(self,value):
-        self.value=self.value%value
+        self.value%=value
         return self
     
     def __ipow__(self,value):
-        self.value=self.value**value
+        self.value**=value
         return self
     
     #* COMPARATIVE METHODS
