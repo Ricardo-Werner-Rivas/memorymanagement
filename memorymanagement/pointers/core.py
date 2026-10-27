@@ -207,7 +207,7 @@ class Pointer(Generic[PT]):
             # If an instance's attribute name is given
             if attr:
                 # If the attribute belongs to the pointer's value
-                if attr in dir(self._value):
+                if attr in dir(self.value):
                     # Store the attribute name into its corresponding hidden attribute
                     self._attr=attr
                 # Else
