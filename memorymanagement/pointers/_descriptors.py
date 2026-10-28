@@ -17,6 +17,12 @@ from inspect import currentframe
 #* ATTRIBUTE ACCESS MANAGER
 # Define the attribute access manager descriptor
 class AttrAccessManager:
+    """
+    Descriptor to block any access to the associated attributed from outside its owner class.
+    The descriptor is the one storing the value of the attribute, instead of the owner class.
+    
+    The descriptor contains getter, setter and deleter.
+    """
     #* METHODS
     # Custom name
     def __set_name__(self,owner,name):
