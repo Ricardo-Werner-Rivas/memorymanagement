@@ -29,14 +29,14 @@ class Cleaner:
     
     Attributes
     ----------
-    _not_delete : `list[str]`, Hidden
+    _not_delete : `list[str]`, Private
         List of variables to never delete from memory. These cannot be included in the process even if ordered so.
         These mainly are imports and variables needed for the system to work.
-    _excluded : `list[str]`, Hidden
+    _excluded : `list[str]`, Private
         List of variables excluded from the memory cleaning that can be included again if desired.
-    _flagged : `list[str]`, Hidden
+    _flagged : `list[str]`, Private
         List of variables to erase from memory. Variables can be put in and/or taken out through methods.
-    _name : `str`, Hidden
+    _name : `str`, Private
         Name of the variable referencing the `Cleaner` object. Only for internal purposes.
     
     Methods
