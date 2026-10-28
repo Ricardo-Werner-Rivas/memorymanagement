@@ -29,14 +29,14 @@ class Cleaner:
     
     Attributes
     ----------
-    _not_delete : `list[str]`, Hidden
+    _not_delete : `list[str]`, Private
         List of variables to never delete from memory. These cannot be included in the process even if ordered so.
         These mainly are imports and variables needed for the system to work.
-    _excluded : `list[str]`, Hidden
+    _excluded : `list[str]`, Private
         List of variables excluded from the memory cleaning that can be included again if desired.
-    _flagged : `list[str]`, Hidden
+    _flagged : `list[str]`, Private
         List of variables to erase from memory. Variables can be put in and/or taken out through methods.
-    _name : `str`, Hidden
+    _name : `str`, Private
         Name of the variable referencing the `Cleaner` object. Only for internal purposes.
     
     Methods
@@ -107,9 +107,9 @@ class Cleaner:
             if isinstance(value,Cleaner) and key in self._vars_dict.keys():
                 del self._vars_dict[key]
         # Declare the main hidden attributes
-        self._not_delete=not_delete.copy()
-        self._excluded=excluded.copy()
-        self._flagged=flagged.copy()
+        self._not_delete=not_delete
+        self._excluded=excluded
+        self._flagged=flagged
         self._name=None
     
     # Update
@@ -176,7 +176,7 @@ class Cleaner:
         Arguments
         ---------
         include : `tuple[str]`
-            Stream of references to be included.
+            Stream of references to be included into the cleaning process.
         """
         # Loop for the variables to include
         for var in include:
@@ -204,14 +204,8 @@ class Cleaner:
         
         # If there are exceptions
         if include:
-            # If `include` content is a string
-            if isinstance(include,str):
-                # Include varianle
-                self.include(include)
-            # Else
-            else:
-                # Include variables (unpacking)
-                self.include(*include)
+            # Include variable(s)
+            self.include(*include if not isinstance(include,str) else include)
     
     # Include all excluded variables
     def include_all(self,*,exclude:str|list[str]|tuple[str]|None=None):
@@ -230,14 +224,8 @@ class Cleaner:
         
         # If the are exceptions
         if exclude:
-            # If `exclude` content is a string
-            if isinstance(exclude,str):
-                # Exclude variable
-                self.exclude(exclude)
-            # Else
-            else:
-                # Exclude variables (unpacking)
-                self.exclude(*exclude)
+            # Exclude variable(s)
+            self.exclude(*exclude if not isinstance(exclude,str) else exclude)
     
     # Purge flagged and excluded variables
     def purge(self,*,flagged:bool=True,excluded:bool=True):
@@ -247,10 +235,10 @@ class Cleaner:
         Arguments
         ---------
         flagged : `bool`, Optional
-            Wether the `flagged` list should be purged (`True`) or not (`False`).
+            Whether the `flagged` list should be purged (`True`) or not (`False`).
             `True` by default
         excluded : `bool`, Optional
-            Wether the `excluded` list should be purged (`True`) or not (`False`).
+            Whether the `excluded` list should be purged (`True`) or not (`False`).
             `True` by default
         """
         # If there is no list to be purged
