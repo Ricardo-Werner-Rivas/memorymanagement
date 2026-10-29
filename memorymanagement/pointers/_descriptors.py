@@ -39,49 +39,39 @@ class AttrAccessManager:
     """
     #* METHODS
     # Custom name
-    def __set_name__(self,owner,name):
+    def __set_name__(self,owner:type,name:str):
         # Store the variable's name
         self.name=name
     
     # Getter
-    def __get__(self,instance,owner):
-        # If there is no instance
-        if instance is None:
-            # The descriptor instance is returned
-            return self
-        # Get the object calling the descriptor
-        caller=currentframe().f_back.f_locals.get("self",None)
-        # If it matches the received instance
-        if caller is instance:
+    def __get__(self,instance:object,owner:type):
+        # If the object calling the descriptor matches the received instance
+        if currentframe().f_back.f_locals.get("self",None) is instance:
             # Return the stored value
             return self.value
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {owner.__name__} class")
     
     # Setter
-    def __set__(self,instance,value):
-        # Get the object calling the descriptor
-        caller=currentframe().f_back.f_locals.get("self",None)
-        # If it matches the received instance
-        if caller is instance:
+    def __set__(self,instance:object,value):
+        # If the object calling the descriptor matches the received instance
+        if currentframe().f_back.f_locals.get("self",None) is instance:
             # Store the new value
             self.value=value
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {instance.__class__.__name__} class")
     
     # Deleter
-    def __delete__(self,instance):
-        # Get the object calling the descriptor
-        caller=currentframe().f_back.f_locals.get("self",None)
-        # If it matches the received instance
-        if caller is instance:
+    def __delete__(self,instance:object):
+        # If the object calling the descriptor matches the received instance
+        if currentframe().f_back.f_locals.get("self",None) is instance:
             # Delete the stored value
             del self.value
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {instance.__class__.__name__} class")
