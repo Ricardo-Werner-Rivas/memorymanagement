@@ -41,24 +41,24 @@ class Pointer(Generic[PT]):
     Non-mutable objects still change their memory addresses when re-referenced,
     but the reference and the value stored in the pointer are forced to share memory address.
     
-    Value and memory address updates are not made in real-time, but the properties update the non-coincident values:
+    Value and memory address updates are not made in real-time, but the properties update the non-matching values:
     * **Getter**: it updates its own value to the variable's one (if a single reference is targeted).
-    * **Setter**: it updates the value of the variable to its own.
-    * **Deleter**: it also deletes the original variable.
+    * **Setter**: it updates the value of the variable(s) to its own.
+    * **Deleter**: it deletes the original variable.
     ---
     
     Attributes
     ----------
-    value : `Any`, Obfuscated
+    value : `Any`, Obfuscated descriptor
         Object to point to.
-    attr : `str`|`None`, Obfuscated
+    attr : `str`|`None`, Obfuscated descriptor
         Name of class or instance attribute. Only if `value` is a class or instance.
-    name : `str`, Obfuscated
+    name : `str`|`tuple[str]`, Obfuscated descriptor
         Name of the variable to which the pointer is pointing.
         Could be a tuple of names.
-    vars_dict : `dict[str,Any]`, Obfuscated
-        Dictionary of variables.
-        Set to `inspect.currentframe().f_back.f_locals`.
+    vars_dict : `dict[str,Any]`, Obfuscated descriptor
+        Variables' dictionary.
+        Set to `inspect.currentframe().f_back.f_locals` by default.
     
     Methods
     -------
@@ -66,6 +66,8 @@ class Pointer(Generic[PT]):
             Changes the variable or attribute the pointer is pointed to.
         **get_refs**
             Returns all the references pointing to the pointer's value.
+        **select_ref**
+            Switches to a reference through an index instead of the reference's name.
         **switch_ref**
             Allows to switch between the references pointing to the pointer's value.
         **switch_frame**
@@ -76,7 +78,7 @@ class Pointer(Generic[PT]):
         **value**
             Points to `value` (or `value.attr`).
             Called through `<instance@Pointer>.value`.
-            All three possible objects (getter, setter and deleter) have been declared.
+            All three possible objects (getter, setter and deleter) have been defined.
         **reference**
             Pointed reference.
             Called through `<instance@Pointer>.reference`.
