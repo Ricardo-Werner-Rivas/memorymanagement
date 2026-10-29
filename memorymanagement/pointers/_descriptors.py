@@ -18,10 +18,24 @@ from inspect import currentframe
 # Define the attribute access manager descriptor
 class AttrAccessManager:
     """
-    Descriptor to block any access to the associated attributed from outside its owner class.
+    Descriptor to block any access to the associated attribute from outside its owner class.
     The descriptor is the one storing the value of the attribute, instead of the owner class.
     
     The descriptor contains getter, setter and deleter.
+    
+    Methods
+    -------
+    __set_name__
+        Stores the descriptor instance's name.
+    __get__
+        Checks if descriptor is called internally or externally.
+        Returns the stored value if called internally.
+    __set__
+        Checks if descriptor is called internally or externally.
+        Stores the new value if called internally.
+    __delete__
+        Checks if descriptor is called internally or externally.
+        Deletes the stored value if called internally.
     """
     #* METHODS
     # Custom name
