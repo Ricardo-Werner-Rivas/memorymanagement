@@ -17,8 +17,8 @@ from typing import TypeVar,Generic
 from collections.abc import Generator
 # Import `currentframe` from `inspect` package
 from inspect import currentframe
-# Import `AttrAccessManager` from the `descriptors` module
-from ._descriptors import AttrAccessManager
+# Import `AttrAccessManager` from the `_descriptors` module
+from .._descriptors import AttrAccessManager
 
 #* TYPING
 # Define type with `TypeVar`
