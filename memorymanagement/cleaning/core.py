@@ -31,14 +31,14 @@ class Cleaner:
     
     Attributes
     ----------
-    __not_delete : `list[str]`, Private
+    __not_delete : `list[str]`, Obfuscated descriptor
         List of variables to never delete from memory. These cannot be included in the process even if ordered so.
         These mainly are imports and variables needed for the system to work.
-    __excluded : `list[str]`, Private
+    __excluded : `list[str]`, Obfuscated descriptor
         List of variables excluded from the memory cleaning that can be included again if desired.
-    __flagged : `list[str]`, Private
+    __flagged : `list[str]`, Obfuscated descriptor
         List of variables to erase from memory. Variables can be put in and/or taken out through methods.
-    _name : `str`, Private
+    __name : `str`, Obfuscated descriptor
         Name of the variable referencing the `Cleaner` object. Only for internal purposes.
     
     Methods
@@ -79,6 +79,7 @@ class Cleaner:
     __excluded=AttrAccessManager()
     __flagged=AttrAccessManager()
     __vars_dict=AttrAccessManager()
+    __name=AttrAccessManager()
     #* METHODS
     # __init__
     def __init__(self,not_delete:list[str]|None=None,excluded:list[str]=[],flagged:list[str]=[]):
@@ -120,7 +121,7 @@ class Cleaner:
         self.__not_delete=not_delete
         self.__excluded=excluded
         self.__flagged=flagged
-        self._name=None
+        self.__name=None
     
     # Update
     def update(self,exclude:str|list[str]|tuple[str]|None=None,include:str|list[str]|tuple[str]|None=None):
@@ -293,23 +294,23 @@ class Cleaner:
             Reference of the `Cleaner` instance.
         """
         # If reference is not set or it doesn't point to the `Cleaner` object
-        if not self._name or self.__vars_dict[self._name] is not self:
-            # Set `_name` hidden attribute to `None`
-            self._name=None
+        if not self.__name or self.__vars_dict[self.__name] is not self:
+            # Set `__name` hidden attribute to `None`
+            self.__name=None
             # Loop for variables dictionary
             for key,value in self.__vars_dict.items():
                 # If current value is the `Cleaner` object
                 if value is self:
                     # Store the reference
-                    self._name=key
+                    self.__name=key
                     # Break
                     break
             # If reference remains empty
-            if not self._name:
+            if not self.__name:
                 # Raise a `ReferenceError`
                 raise ReferenceError("\"Cleaner\" object is not referenced")
         # Return the reference
-        return self._name
+        return self.__name
     #^ No setter
     #^ No deleter
     
@@ -372,7 +373,7 @@ class Cleaner:
     # __repr__
     def __repr__(self):
         # Return a string able to rebuild the instance if needed
-        return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
+        return f"{self.__class__.___name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
     
     # __str__
     def __str__(self):
