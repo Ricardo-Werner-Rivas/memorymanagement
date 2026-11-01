@@ -373,7 +373,7 @@ class Cleaner:
     # __repr__
     def __repr__(self):
         # Return a string able to rebuild the instance if needed
-        return f"{self.__class__.___name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
+        return f"{self.__class__.__name__}(not_delete={self.not_delete},excluded={self.excluded},flagged={self.flagged})"
     
     # __str__
     def __str__(self):
