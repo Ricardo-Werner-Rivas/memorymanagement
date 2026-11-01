@@ -78,7 +78,7 @@ class AttrAccessManager:
             If the attribute for which the descriptor was instanced is called outside the owner class.
         """
         # If the object calling the descriptor matches the received instance
-        if instance and currentframe().f_back.f_locals.get("self",None) is instance:
+        if instance is not None and currentframe().f_back.f_locals.get("self",None) is instance:
             # Return the stored value
             return self.value
         # Else
