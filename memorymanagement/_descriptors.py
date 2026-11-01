@@ -78,13 +78,13 @@ class AttrAccessManager:
             If the attribute for which the descriptor was instanced is called outside the owner class.
         """
         # If the object calling the descriptor matches the received instance
-        if currentframe().f_back.f_locals.get("self",None) is instance:
+        if instance and currentframe().f_back.f_locals.get("self",None) is instance:
             # Return the stored value
             return self.value
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {owner.__name__} class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the \"{owner.__name__}\" class")
     
     # Setter
     def __set__(self,instance,value):
@@ -111,7 +111,7 @@ class AttrAccessManager:
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {instance.__class__.__name__} class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the \"{instance.__class__.__name__}\" class")
     
     # Deleter
     def __delete__(self,instance):
@@ -136,4 +136,4 @@ class AttrAccessManager:
         # Else
         else:
             # Raise an `AttributeError`
-            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the {instance.__class__.__name__} class")
+            raise AttributeError(f"Attribute \"{self.name}\" is not accessible outside the \"{instance.__class__.__name__}\" class")
