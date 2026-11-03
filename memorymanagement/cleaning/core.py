@@ -117,7 +117,7 @@ class Cleaner:
             # Delete every other `Cleaner` object
             if isinstance(value,Cleaner) and key in self.__vars_dict.keys():
                 del self.__vars_dict[key]
-        # Declare the main hidden attributes
+        # Declare the main obfuscated attributes
         self.__not_delete=not_delete
         self.__excluded=excluded
         self.__flagged=flagged
@@ -252,10 +252,6 @@ class Cleaner:
             Whether the `excluded` list should be purged (`True`) or not (`False`).
             `True` by default
         """
-        # If there is no list to be purged
-        if not flagged and not excluded:
-            # Pass
-            pass
         # If `flagged` is to be purged
         if flagged:
             # Clear `flagged` list
@@ -295,7 +291,7 @@ class Cleaner:
         """
         # If reference is not set or it doesn't point to the `Cleaner` object
         if not self.__name or self.__vars_dict[self.__name] is not self:
-            # Set `__name` hidden attribute to `None`
+            # Set `__name` obfuscated attribute to `None`
             self.__name=None
             # Loop for variables dictionary
             for key,value in self.__vars_dict.items():
