@@ -26,7 +26,7 @@ class Cleaner:
     
     ## WARNING
     THERE CAN ONLY BE **ONE** CLEANER OBJECT.\n
-    Initializing a new one will delete all global references to the previous one.\n
+    Initializing a new one will delete every reference to the previous one.\n
     ---
     
     Attributes
