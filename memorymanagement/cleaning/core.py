@@ -20,7 +20,7 @@ from .._descriptors import AttrAccessManager
 # Class `Cleaner`
 class Cleaner:
     """
-    Class for references management. It keeps track of the names of the global variables to be deleted and deletes them when ordered.
+    Class for references' management. It keeps track of the names of the global variables to be deleted and deletes them when ordered.
     
     The cleaning process only deletes the flagged references to objects, but doesn't directly force the garbage collector to destroy the objects they are pointing to.
     
@@ -31,15 +31,17 @@ class Cleaner:
     
     Attributes
     ----------
-    __not_delete : `list[str]`, Obfuscated descriptor
+    not_delete : `list[str]`, Obfuscated descriptor
         List of variables to never delete from memory. These cannot be included in the process even if ordered so.
         These mainly are imports and variables needed for the system to work.
-    __excluded : `list[str]`, Obfuscated descriptor
+    excluded : `list[str]`, Obfuscated descriptor
         List of variables excluded from the memory cleaning that can be included again if desired.
-    __flagged : `list[str]`, Obfuscated descriptor
+    flagged : `list[str]`, Obfuscated descriptor
         List of variables to erase from memory. Variables can be put in and/or taken out through methods.
-    __name : `str`, Obfuscated descriptor
-        Name of the variable referencing the `Cleaner` object. Only for internal purposes.
+    name : `str`, Obfuscated descriptor
+        Name of the variable referencing the `Cleaner` object. Only for internal purposes.\n
+    These attributes' access is restricted, so they can only be gotten or manipulated from inside the class's code.
+    Trying to access them from outside the class's code through the instance or class will raise an error.
     
     Methods
     -------

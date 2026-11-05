@@ -58,7 +58,9 @@ class Pointer(Generic[PT]):
         Could be a tuple of names.
     vars_dict : `dict[str,Any]`, Obfuscated descriptor
         Variables' dictionary.
-        Set to `inspect.currentframe().f_back.f_locals` by default.
+        Set to `inspect.currentframe().f_back.f_locals` by default.\n
+    These attributes' access is restricted, so they can only be gotten or manipulated from inside the class's code.
+    Trying to access them from outside the class's code through the instance or class will raise an error.
     
     Methods
     -------
@@ -135,7 +137,7 @@ class Pointer(Generic[PT]):
         AttributeError
             If the targeted attribute doesn't belong to the targeted object.
         """
-        # Store hidden attributes `__attr` and `__vars_dict`
+        # Store obfuscated attributes `__attr` and `__vars_dict`
         self.__attr=attr # Class or instance attribute to point to
         self.__vars_dict=vars_dict=currentframe().f_back.f_locals # Variables' dictionary
         
@@ -182,7 +184,7 @@ class Pointer(Generic[PT]):
             
         # Set argument `value` as the pointer's value
         self.__value=value
-        # Store the reference in the hidden attribute `__name`
+        # Store the reference in the obfuscated attribute `__name`
         self.__name=name
         
         # If there is a class' or instance's attribute to point to but it doesn't belong to the given value
@@ -225,7 +227,7 @@ class Pointer(Generic[PT]):
             if attr:
                 # If the attribute belongs to the pointer's value
                 if attr in dir(self.value):
-                    # Store the attribute name into its corresponding hidden attribute
+                    # Store the attribute name into its corresponding obfuscated attribute
                     self.__attr=attr
                 # Else
                 else:
@@ -239,13 +241,13 @@ class Pointer(Generic[PT]):
         elif reference and value:
             # If the reference is in the variables' frame and it points to the given value
             if reference in self.__vars_dict and self.__vars_dict[reference] is value:
-                # Store both into their corresponding hidden attributes
+                # Store both into their corresponding obfuscated attributes
                 self.__name,self.__value=reference,value
                 # If an attribute name is given
                 if attr:
                     # If the attribute belongs to the given value
                     if attr in dir(self.__value):
-                        # Store attribute name into its corresponding hidden attribute
+                        # Store attribute name into its corresponding obfuscated attribute
                         self.__attr=attr
                     # Else
                     else:
@@ -263,13 +265,13 @@ class Pointer(Generic[PT]):
         elif reference:
             # If the reference is in the variables' frame
             if reference in self.__vars_dict:
-                # Store the reference and the value it is pointing to into their corresponding hidden attributes
+                # Store the reference and the value it is pointing to into their corresponding obfuscated attributes
                 self.__name,self.__value=reference,self.__vars_dict[reference]
                 # If an instance's attribute name is given
                 if attr:
                     # If the attribute belongs to the new value
                     if attr in dir(self.__value):
-                        # Store the attribute name into its corresponding hidden attribute
+                        # Store the attribute name into its corresponding obfuscated attribute
                         self.__attr=attr
                     # Else
                     else:
@@ -289,7 +291,7 @@ class Pointer(Generic[PT]):
                 if attr:
                     # If the attribute belongs to the new value
                     if attr in dir(self.__value):
-                        # Store the attribute name into its corresponding hidden attribute
+                        # Store the attribute name into its corresponding obfuscated attribute
                         self.__attr=attr
                     # Else
                     else:
@@ -441,7 +443,7 @@ class Pointer(Generic[PT]):
         elif reference not in self.__vars_dict:
             # Raise a `NameError`
             raise NameError(f"Name \"{reference}\" is not defined")
-        # Store the reference into its corresponding hidden attribute
+        # Store the reference into its corresponding obfuscated attribute
         self.__name=reference
         # Return the `Pointer` object
         return self
@@ -458,7 +460,7 @@ class Pointer(Generic[PT]):
         """
         # Get the frame of origin
         frame=currentframe().f_back
-        # Set `_var_dict` hidden attribute to the global or the current local frame
+        # Set `_var_dict` obfuscated attribute to the global or the current local frame
         self.__vars_dict=frame.f_globals if frame.f_globals!=self.__vars_dict else frame.f_locals
         # Return the `Pointer` object
         return self
@@ -524,7 +526,7 @@ class Pointer(Generic[PT]):
                 pass
             # Else, if the stored reference is not in the variables' frame
             elif self.reference not in self.__vars_dict:
-                # Delete the pointer's hidden attribute `__value`
+                # Delete the pointer's obfuscated attribute `__value`
                 del self.__value
                 # Raise a `NameError`
                 raise NameError("The variable has already been deleted, so the pointer no longer has access to it.")
@@ -564,7 +566,7 @@ class Pointer(Generic[PT]):
             delattr(self.__value,self.attr)
         # Else
         else:
-            # Delete the `__value` pointer's hidden attribute
+            # Delete the `__value` pointer's obfuscated attribute
             del self.__value
             # If a tuple is stored
             if isinstance(self.reference,tuple):
@@ -604,7 +606,7 @@ class Pointer(Generic[PT]):
                 del self.__value
                 # If an attribute name was given
                 if self.attr:
-                    # Delete `__attr` hidden attribute
+                    # Delete `__attr` obfuscated attribute
                     del self.__attr
                 # Raise a `NameError`
                 raise NameError("The object has already been deleted, so the pointer no longer has access to it.")
