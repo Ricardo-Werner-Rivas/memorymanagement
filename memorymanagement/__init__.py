@@ -15,8 +15,10 @@ If value for the reference(s) is changed, so is the pointer's value and *vicever
 Allows a function to receive `Pointer` objects instead of the normally expected values.
 """
 # Imports
-from .cleaning import Cleaner
-from .pointers import Pointer,pointerize
+from .cleaning import Cleaner # Class `Cleaner` (`cleaning` module)
+from .pointers import Pointer,pointerize # Class `Pointer` and `pointerize` decorator (`pointers` module)
+from importlib.metadata import version # `version` function (`importlib.metadata` module)
 
-# Declare `__all__`
-__all__=["Cleaner","Pointer","pointerize"]
+# Module level dunders
+__all__=["Cleaner","Pointer","pointerize"] # `__all__`
+__version__=version("memorymanagement") # `__version__`

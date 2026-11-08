@@ -30,12 +30,15 @@ class AttrAccessManager:
     __get__
         Checks if descriptor is called internally or externally.
         Returns the stored value if called internally.
+        Else, it raises an `AttributeError`.
     __set__
         Checks if descriptor is called internally or externally.
         Stores the new value if called internally.
+        Else, it raises an `AttributeError`.
     __delete__
         Checks if descriptor is called internally or externally.
         Deletes the stored value if called internally.
+        Else, it raises an `AttributeError`.
     """
     #* METHODS
     # Custom name
