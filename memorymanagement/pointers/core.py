@@ -80,7 +80,7 @@ class Pointer(Generic[PT]):
         **value**
             Points to `value` (or `value.attr`).
             Called through `<instance@Pointer>.value`.
-            All three possible objects (getter, setter and deleter) have been defined.
+            **All three** possible objects (getter, setter and deleter) have been defined.
         **reference**
             Pointed reference.
             Called through `<instance@Pointer>.reference`.
@@ -88,7 +88,7 @@ class Pointer(Generic[PT]):
         **attr**
             Name of the attribute of the pointed class instance.
             Called through `<instance@Pointer>.attr`.
-            **Only getter** defined.
+            **Only getter and setter** defined.
     ---
     ## Currently supported
     Both global and local variables can be pointed at.
@@ -617,9 +617,17 @@ class Pointer(Generic[PT]):
     
     # Attribute
     @property
+    # Getter
     def attr(self)->str|None:
         """
-        Gets the name of the attribute the pointer is pointing to, if it was given.
+        Gets or sets the name of the attribute the pointer is to point to.
+        
+        Arguments
+        ---------
+        attribute : `str`|`None`, Optional
+            Name of the attribute the pointer is to point to.
+            Must belong to the current pointer's value or be `None`.
+            If set to `None` (default), the pointer will point to the class or instance instead of to a single attribute.
         
         Returns
         -------
@@ -628,7 +636,13 @@ class Pointer(Generic[PT]):
         """
         # Return the stored attribute name
         return self.__attr
-    #^ No setter
+    # Setter
+    @attr.setter
+    def attr(self,attribute:str|None=None):
+        # If no attribute name was given or the given attribute name belongs to current pointer's value
+        if not attribute or attribute in dir(self.value):
+            # Set the obfuscated attribute `__attr` to the new attribute name (`str` or `None`)
+            self.__attr=attribute
     #^ No deleter
     
     #* INDEXATION
