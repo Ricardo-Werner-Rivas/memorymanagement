@@ -1,8 +1,8 @@
 # `memorymanagement`
 Provides memory management support.
 
-The only Python implementation currently supported is the one made by the **CPython** team.
-The rest remain untested.
+The only Python implementation currently supported is the **CPython** interpreter.
+The rest are untested.
 ## Table of Contents
 * [Modules](#modules)
     * [`cleaning`](#cleaning)
@@ -22,7 +22,8 @@ It is also possible to modify the list of flagged references through its methods
 ### `pointers`
 Provides a safe implementation of pointers for Python.
 #### Class `Pointer`
-The pointer itself. Imitates the behaviour of C pointers. `Pointer` points to a **reference**, not to an object stored in memory.
+The pointer itself. Imitates the behaviour of C pointers.
+`Pointer` points to a **reference**, or to every reference at the same time, not to an object stored in memory.
 #### Decorator `pointerize`
 Allows functions to receive pointers instead of values.
 ## Installation
@@ -116,15 +117,22 @@ cleaner.purge()
 ### Class `Pointer`
 Example:
 ```py
+# Import the `Pointer` class
 from memorymanagement import Pointer
-a=10
-x=Pointer(a)
-print(f"a:\n{a}\n\nPointer:\n{x.value}\n\n")
-a=20
-print(f"a:\n{a}\n\nPointer:\n{x.value}\n\n")
-a=10
-x.value=20
-print(f"a:\n{a}\n\nPointer:\n{x.value}")
+# Create a pointer to a variable
+p=Pointer(x:=10).select_ref() # So it points to "x" reference, instead of every reference. Also `p=Pointer(x:=10,"x")`
+# Print variable and pointer's value
+print(f"a:\n{x}\n\nPointer:\n{p.value}\n\n")
+# Set variable to 20
+x=20
+# Print variable and pointer's value
+print(f"a:\n{x}\n\nPointer:\n{p.value}\n\n")
+# Set variable to 10
+x=10
+# Set pointer's value to 20
+p.value=20
+# Print variable and pointer's value
+print(f"a:\n{x}\n\nPointer:\n{p.value}")
 ```
 Output:
 ```sh
@@ -151,15 +159,21 @@ Pointer:
 ### Decorator `pointerize`
 Example:
 ```py
+# Import pointerize decorator
 from memorymanagement import pointerize
+# Define and decorate `myFunction`
 @pointerize
 def myFunction(value:int):
+    # Set the value to 20
     value=20
-    return
-a=10
-print(f"Value: {a}")
-myFunction(Pointer(a))
-print(f"Value: {a}")
+# Set a new variable to a value (10 in this case)
+x=10
+# Print variable
+print(f"Value: {x}")
+# Execute the function using a pointer to `x`
+myFunction(Pointer(x))
+# Print `x` variable
+print(f"Value: {x}")
 ```
 Output:
 ```sh
