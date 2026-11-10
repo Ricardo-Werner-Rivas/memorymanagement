@@ -249,10 +249,10 @@ class Cleaner:
         ---------
         flagged : `bool`, Optional
             Whether the `flagged` list should be purged (`True`) or not (`False`).
-            `True` by default
+            `True` by default.
         excluded : `bool`, Optional
             Whether the `excluded` list should be purged (`True`) or not (`False`).
-            `True` by default
+            `True` by default.
         """
         # If `flagged` is to be purged
         if flagged:
