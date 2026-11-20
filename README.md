@@ -122,35 +122,35 @@ from memorymanagement import Pointer
 # Create a pointer to a variable
 p=Pointer(x:=10).select_ref() # So it points to "x" reference, instead of every reference. Also `p=Pointer(x:=10,"x")`
 # Print variable and pointer's value
-print(f"a:\n{x}\n\nPointer:\n{p.value}\n\n")
+print(f"x:\n{x}\n\nPointer:\n{p.value}\n\n")
 # Set variable to 20
 x=20
 # Print variable and pointer's value
-print(f"a:\n{x}\n\nPointer:\n{p.value}\n\n")
+print(f"x:\n{x}\n\nPointer:\n{p.value}\n\n")
 # Set variable to 10
 x=10
 # Set pointer's value to 20
 p.value=20
 # Print variable and pointer's value
-print(f"a:\n{x}\n\nPointer:\n{p.value}")
+print(f"x:\n{x}\n\nPointer:\n{p.value}")
 ```
 Output:
 ```sh
-a:
+x:
 10
 
 Pointer:
 10
 
 
-a:
+x:
 20
 
 Pointer:
 20
 
 
-a:
+x:
 20
 
 Pointer:
