@@ -41,6 +41,11 @@ class AttrAccessManager:
         Else, it raises an `AttributeError`.
     """
     #* METHODS
+    # __init__
+    def __init__(self):
+        # Initialize `value` attribute
+        self.value={}
+    
     # Custom name
     def __set_name__(self,owner:type,name:str):
         """
@@ -83,7 +88,7 @@ class AttrAccessManager:
         # If the object calling the descriptor matches the received instance
         if instance is not None and currentframe().f_back.f_locals.get("self",None) is instance:
             # Return the stored value
-            return self.value
+            return self.value[id(instance)]
         # Else
         else:
             # Raise an `AttributeError`
@@ -110,7 +115,7 @@ class AttrAccessManager:
         # If the object calling the descriptor matches the received instance
         if currentframe().f_back.f_locals.get("self",None) is instance:
             # Store the new value
-            self.value=value
+            self.value[id(instance)]=value
         # Else
         else:
             # Raise an `AttributeError`
@@ -135,7 +140,7 @@ class AttrAccessManager:
         # If the object calling the descriptor matches the received instance
         if currentframe().f_back.f_locals.get("self",None) is instance:
             # Delete the stored value
-            del self.value
+            del self.value[id(instance)]
         # Else
         else:
             # Raise an `AttributeError`
